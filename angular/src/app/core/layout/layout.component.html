@@ -1,0 +1,112 @@
+<div class="layout-root" [class.sidebar-collapsed]="collapsed()">
+
+  <!-- ── Mobile overlay backdrop ─────────────────────────────── -->
+  @if (isMobileOpen()) {
+    <div class="mobile-backdrop" (click)="toggleMobile()"></div>
+  }
+
+  <!-- ════════════════════════════════════════════════════════════
+       SIDEBAR
+  ═══════════════════════════════════════════════════════════════ -->
+  <aside class="sidebar" [class.open]="isMobileOpen()">
+
+    <!-- Brand / Logo -->
+    <div class="sidebar-brand">
+      <div class="brand-icon">
+        <i class="pi pi-receipt"></i>
+      </div>
+      @if (!collapsed()) {
+        <span class="brand-name">Ruru POS</span>
+      }
+      <button class="collapse-btn" (click)="toggle()" [pTooltip]="collapsed() ? 'Expand sidebar' : 'Collapse sidebar'" tooltipPosition="right">
+        <i class="pi" [class.pi-chevron-left]="!collapsed()" [class.pi-chevron-right]="collapsed()"></i>
+      </button>
+    </div>
+
+    <!-- Navigation Items -->
+    <nav class="sidebar-nav">
+      @for (item of navItems; track item.route) {
+        <a
+          class="nav-item"
+          [routerLink]="item.route"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: item.route === '/' }"
+          [pTooltip]="collapsed() ? item.label : ''"
+          tooltipPosition="right"
+        >
+          <i [class]="item.icon + ' nav-icon'"></i>
+          @if (!collapsed()) {
+            <span class="nav-label">{{ item.label }}</span>
+          }
+        </a>
+      }
+    </nav>
+
+    <!-- Sidebar Footer: User profile + Register status -->
+    <div class="sidebar-footer">
+      <div class="register-status">
+        <span class="status-dot"></span>
+        @if (!collapsed()) {
+          <span class="status-text">Register Open · Shift 1</span>
+        }
+      </div>
+
+      <div class="user-section" [pTooltip]="collapsed() ? 'User Profile' : ''" tooltipPosition="right">
+        <p-avatar label="VT" shape="circle" styleClass="user-avatar" />
+        @if (!collapsed()) {
+          <div class="user-info">
+            <span class="user-name">Victor Tan</span>
+            <span class="user-role">Administrator</span>
+          </div>
+          <i class="pi pi-chevron-up user-chevron"></i>
+        }
+      </div>
+    </div>
+
+  </aside>
+
+  <!-- ════════════════════════════════════════════════════════════
+       MAIN COLUMN  (topbar + content)
+  ═══════════════════════════════════════════════════════════════ -->
+  <div class="main-column">
+
+    <!-- Topbar -->
+    <header class="topbar">
+      <!-- Mobile: hamburger -->
+      <button class="mobile-menu-btn" (click)="toggleMobile()">
+        <i class="pi pi-bars"></i>
+      </button>
+
+      <!-- Breadcrumb / Page Title (populated via service later) -->
+      <div class="topbar-breadcrumb">
+        <span class="breadcrumb-root">Ruru POS</span>
+        <i class="pi pi-angle-right breadcrumb-sep"></i>
+        <span class="breadcrumb-current">Dashboard</span>
+      </div>
+
+      <div class="topbar-actions">
+        <!-- Global search -->
+        <div class="search-bar">
+          <i class="pi pi-search search-icon"></i>
+          <input type="text" class="search-input" placeholder="Quick search…" />
+          <kbd class="search-kbd">⌘K</kbd>
+        </div>
+
+        <!-- Notifications -->
+        <button class="action-btn" pBadge value="3" severity="danger">
+          <i class="pi pi-bell"></i>
+        </button>
+
+        <!-- User avatar -->
+        <p-avatar label="VT" shape="circle" styleClass="topbar-avatar" />
+      </div>
+    </header>
+
+    <!-- Page content slot -->
+    <main class="page-content">
+      <ng-content></ng-content>
+    </main>
+
+  </div>
+
+</div>
