@@ -1,8 +1,9 @@
-import { Component, model } from '@angular/core';
+import { Component, model, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TooltipModule } from 'primeng/tooltip';
 import { BadgeModule } from 'primeng/badge';
 import { AvatarModule } from 'primeng/avatar';
+import { ThemeService } from '../../theme/theme.service';
 
 @Component({
   selector: 'app-header',
@@ -14,6 +15,8 @@ import { AvatarModule } from 'primeng/avatar';
 export class AppHeaderComponent {
   readonly collapsed = model.required<boolean>();
   readonly isMobileOpen = model.required<boolean>();
+
+  readonly themeService = inject(ThemeService);
 
   toggle(): void {
     this.collapsed.update(v => !v);

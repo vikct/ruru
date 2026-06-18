@@ -21,6 +21,11 @@
     <i class="pi pi-bell"></i>
   </button>
 
+  <!-- Theme Toggle -->
+  <button class="action-btn" (click)="themeService.toggleTheme()" [pTooltip]="themeService.isDarkMode() ? 'Switch to Light Mode' : 'Switch to Dark Mode'" tooltipPosition="bottom">
+    <i class="pi" [class.pi-sun]="themeService.isDarkMode()" [class.pi-moon]="!themeService.isDarkMode()"></i>
+  </button>
+
   <!-- User avatar -->
   <p-avatar label="VT" shape="circle" styleClass="topbar-avatar" />
 </div>

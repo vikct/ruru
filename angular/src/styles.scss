@@ -14,6 +14,11 @@
 @import "primeicons/primeicons.css";
 
 /* ──────────────────────────────────────────────────────────
+   Theme Configurations
+──────────────────────────────────────────────────────────── */
+@import "./app/core/theme/theme.scss";
+
+/* ──────────────────────────────────────────────────────────
    Global reset & base
 ──────────────────────────────────────────────────────────── */
 *, *::before, *::after {
@@ -27,8 +32,9 @@ html, body {
   font-family: 'Inter', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: #080d1a;
-  color: #f1f5f9;
+  background: var(--bg-base);
+  color: var(--text-primary);
+  transition: background 250ms ease, color 250ms ease;
 }
 
 /* Scrollbar styling */
