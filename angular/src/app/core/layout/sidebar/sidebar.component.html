@@ -1,0 +1,49 @@
+<!-- Brand / Logo -->
+<div class="sidebar-brand">
+  <div class="brand-icon">
+    <i class="pi pi-receipt"></i>
+  </div>
+  @if (!collapsed()) {
+    <span class="brand-name">Ruru POS</span>
+  }
+</div>
+
+<!-- Navigation Items -->
+<nav class="sidebar-nav">
+  @for (item of navItems; track item.route) {
+    <a
+      class="nav-item"
+      [routerLink]="item.route"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{ exact: item.route === '/' }"
+      [pTooltip]="collapsed() ? item.label : ''"
+      tooltipPosition="right"
+    >
+      <i [class]="item.icon + ' nav-icon'"></i>
+      @if (!collapsed()) {
+        <span class="nav-label">{{ item.label }}</span>
+      }
+    </a>
+  }
+</nav>
+
+<!-- Sidebar Footer: User profile + Register status -->
+<div class="sidebar-footer">
+  <div class="register-status">
+    <span class="status-dot"></span>
+    @if (!collapsed()) {
+      <span class="status-text">Register Open · Shift 1</span>
+    }
+  </div>
+
+  <div class="user-section" [pTooltip]="collapsed() ? 'User Profile' : ''" tooltipPosition="right">
+    <p-avatar label="VT" shape="circle" styleClass="user-avatar" />
+    @if (!collapsed()) {
+      <div class="user-info">
+        <span class="user-name">Victor Tan</span>
+        <span class="user-role">Administrator</span>
+      </div>
+      <i class="pi pi-chevron-up user-chevron"></i>
+    }
+  </div>
+</div>
