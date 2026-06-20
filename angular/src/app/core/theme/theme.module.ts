@@ -10,6 +10,14 @@ import { TooltipModule } from 'primeng/tooltip';
 import { BadgeModule } from 'primeng/badge';
 import { AvatarModule } from 'primeng/avatar';
 import { RippleModule } from 'primeng/ripple';
+import { TableModule } from 'primeng/table';
+import { DialogModule } from 'primeng/dialog';
+import { InputTextModule } from 'primeng/inputtext';
+import { InputNumberModule } from 'primeng/inputnumber';
+import { SelectModule } from 'primeng/select';
+import { ToastModule } from 'primeng/toast';
+import { ToolbarModule } from 'primeng/toolbar';
+import { MessageService } from 'primeng/api';
 
 @NgModule({
   imports: [
@@ -18,7 +26,14 @@ import { RippleModule } from 'primeng/ripple';
     TooltipModule,
     BadgeModule,
     AvatarModule,
-    RippleModule
+    RippleModule,
+    TableModule,
+    DialogModule,
+    InputTextModule,
+    InputNumberModule,
+    SelectModule,
+    ToastModule,
+    ToolbarModule
   ],
   providers: [
     provideAnimationsAsync(),
@@ -29,14 +44,22 @@ import { RippleModule } from 'primeng/ripple';
           darkModeSelector: '.ruru-dark'
         }
       }
-    })
+    }),
+    MessageService
   ],
   exports: [
     ButtonModule,
     TooltipModule,
     BadgeModule,
     AvatarModule,
-    RippleModule
+    RippleModule,
+    TableModule,
+    DialogModule,
+    InputTextModule,
+    InputNumberModule,
+    SelectModule,
+    ToastModule,
+    ToolbarModule
   ]
 })
 export class ThemeModule {}

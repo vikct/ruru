@@ -1,47 +1,53 @@
+@use './app/core/theme/theme.scss';
+@use 'primeicons/primeicons.css';
 /* ──────────────────────────────────────────────────────────
    Fonts
 ──────────────────────────────────────────────────────────── */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 /* ──────────────────────────────────────────────────────────
-   Tailwind CSS v4
-──────────────────────────────────────────────────────────── */
-@import "tailwindcss";
-
-/* ──────────────────────────────────────────────────────────
-   PrimeIcons
-──────────────────────────────────────────────────────────── */
-@import "primeicons/primeicons.css";
-
-/* ──────────────────────────────────────────────────────────
    Theme Configurations
 ──────────────────────────────────────────────────────────── */
-@import "./app/core/theme/theme.scss";
 
 /* ──────────────────────────────────────────────────────────
    Global reset & base
 ──────────────────────────────────────────────────────────── */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
-html, body {
+html,
+body {
   height: 100%;
   font-family: 'Inter', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background: var(--bg-base);
   color: var(--text-primary);
-  transition: background 250ms ease, color 250ms ease;
+  transition:
+    background 250ms ease,
+    color 250ms ease;
 }
 
 /* Scrollbar styling */
-::-webkit-scrollbar        { width: 5px; height: 5px; }
-::-webkit-scrollbar-track  { background: transparent; }
-::-webkit-scrollbar-thumb  { background: rgba(255,255,255,0.1); border-radius: 99px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 99px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
 
 /* PrimeNG tooltip dark override */
 .p-tooltip .p-tooltip-text {

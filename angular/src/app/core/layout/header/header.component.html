@@ -1,31 +1,36 @@
-<!-- Mobile: hamburger -->
-<button class="mobile-menu-btn" (click)="toggleMobile()">
-  <i class="pi pi-bars"></i>
-</button>
+<div class="layout-topbar">
+  <a class="layout-topbar-logo" href="/">
+    <div class="logo-icon-wrapper">
+      <i class="pi pi-receipt"></i>
+    </div>
+    <span>Ruru POS</span>
+  </a>
 
-<!-- Desktop: sidebar toggle button -->
-<button class="desktop-collapse-btn" (click)="toggle()" [pTooltip]="collapsed() ? 'Expand sidebar' : 'Collapse sidebar'" tooltipPosition="bottom">
-  <i class="pi" [class.pi-bars]="collapsed()" [class.pi-align-left]="!collapsed()"></i>
-</button>
+  <button class="layout-menu-button layout-topbar-button" (click)="toggleMenu()" [pTooltip]="collapsed() ? 'Expand sidebar' : 'Collapse sidebar'" tooltipPosition="bottom">
+    <i class="pi pi-bars"></i>
+  </button>
 
-<div class="topbar-actions">
-  <!-- Global search -->
-  <div class="search-bar">
-    <i class="pi pi-search search-icon"></i>
-    <input type="text" class="search-input" placeholder="Quick search…" />
-    <kbd class="search-kbd">⌘K</kbd>
+  <div class="layout-topbar-menu">
+    <!-- Global search -->
+    <div class="layout-topbar-search">
+      <i class="pi pi-search search-icon"></i>
+      <input type="text" class="search-input" placeholder="Quick search…" />
+      <span class="search-kbd">⌘K</span>
+    </div>
+
+    <!-- Notifications -->
+    <button class="layout-topbar-button" pBadge value="3" severity="danger">
+      <i class="pi pi-bell"></i>
+    </button>
+
+    <!-- Theme Toggle -->
+    <button class="layout-topbar-button" (click)="themeService.toggleTheme()" [pTooltip]="themeService.isDarkMode() ? 'Switch to Light Mode' : 'Switch to Dark Mode'" tooltipPosition="bottom">
+      <i class="pi" [class.pi-sun]="themeService.isDarkMode()" [class.pi-moon]="!themeService.isDarkMode()"></i>
+    </button>
+
+    <!-- User profile avatar button -->
+    <button class="layout-topbar-button profile-btn">
+      <p-avatar label="VT" shape="circle" styleClass="topbar-avatar" />
+    </button>
   </div>
-
-  <!-- Notifications -->
-  <button class="action-btn" pBadge value="3" severity="danger">
-    <i class="pi pi-bell"></i>
-  </button>
-
-  <!-- Theme Toggle -->
-  <button class="action-btn" (click)="themeService.toggleTheme()" [pTooltip]="themeService.isDarkMode() ? 'Switch to Light Mode' : 'Switch to Dark Mode'" tooltipPosition="bottom">
-    <i class="pi" [class.pi-sun]="themeService.isDarkMode()" [class.pi-moon]="!themeService.isDarkMode()"></i>
-  </button>
-
-  <!-- User avatar -->
-  <p-avatar label="VT" shape="circle" styleClass="topbar-avatar" />
 </div>

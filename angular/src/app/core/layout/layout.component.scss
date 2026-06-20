@@ -1,65 +1,83 @@
 // ──────────────────────────────────────────────────────────
-// Design Tokens
+// Layout Shell Styles (Sakai-NG Conventions)
 // ──────────────────────────────────────────────────────────
+
 :host {
-  --sidebar-width: 240px;
-  --sidebar-collapsed-width: 64px;
-  --sidebar-transition: 280ms cubic-bezier(0.4, 0, 0.2, 1);
-  --topbar-height: 60px;
+  --topbar-height: 70px;
+  --sidebar-width: 280px;
+  --sidebar-collapsed-width: 72px;
+  --transition-duration: 0.2s;
+  --transition-timing: cubic-bezier(0.05, 0.74, 0.2, 0.99);
 }
 
-// ──────────────────────────────────────────────────────────
-// Root shell
-// ──────────────────────────────────────────────────────────
-.layout-root {
-  display: flex;
+.layout-wrapper {
   min-height: 100vh;
+  position: relative;
   background: var(--bg-base);
   color: var(--text-primary);
   font-family: 'Inter', system-ui, sans-serif;
 }
 
-// ──────────────────────────────────────────────────────────
-// Mobile overlay
-// ──────────────────────────────────────────────────────────
-.mobile-backdrop {
-  position: fixed;
-  inset: 0;
-  z-index: 40;
-  background: rgba(0, 0, 0, 0.55);
-  backdrop-filter: blur(2px);
-}
-
-// When collapsed: adjust custom sidebar component width
-.layout-root.sidebar-collapsed app-sidebar {
-  width: var(--sidebar-collapsed-width);
-}
-
-// ──────────────────────────────────────────────────────────
-// MAIN COLUMN
-// ──────────────────────────────────────────────────────────
-.main-column {
-  flex: 1;
-  margin-left: var(--sidebar-width);
-  min-width: 0;
+// ── Main Content Container ─────────────────────────────────
+.layout-main-container {
   display: flex;
   flex-direction: column;
-  transition: margin-left var(--sidebar-transition);
+  min-height: 100vh;
+  justify-content: space-between;
+  padding: calc(var(--topbar-height) + 1.5rem) 1.5rem 1.5rem 1.5rem;
+  transition: margin-left var(--transition-duration) var(--transition-timing);
+  margin-left: var(--sidebar-width);
 
-  @media (max-width: 768px) {
+  @media (max-width: 991px) {
     margin-left: 0;
+    padding-top: calc(var(--topbar-height) + 1rem);
+    padding-left: 1rem;
+    padding-right: 1rem;
   }
 }
 
-.layout-root.sidebar-collapsed .main-column {
-  margin-left: var(--sidebar-collapsed-width);
+.layout-main {
+  flex: 1 1 auto;
 }
 
-// ── Page content ──────────────────────────────────────────
-.page-content {
-  flex: 1;
-  padding: 24px 28px;
-  overflow-y: auto;
+// ── Desktop Sidebar Collapse ───────────────────────────────
+@media (min-width: 992px) {
+  .layout-wrapper.layout-static-inactive {
+    .layout-main-container {
+      margin-left: var(--sidebar-collapsed-width);
+    }
+    app-sidebar {
+      width: var(--sidebar-collapsed-width);
+    }
+  }
+}
 
-  @media (max-width: 640px) { padding: 16px; }
+// ── Mobile Sidebar Drawer ──────────────────────────────────
+@media (max-width: 991px) {
+  app-sidebar {
+    transform: translateX(-100%);
+  }
+
+  .layout-wrapper.layout-mobile-active {
+    app-sidebar {
+      transform: translateX(0);
+    }
+    .layout-mask {
+      display: block;
+    }
+  }
+}
+
+// ── Mobile Backdrop Mask ──────────────────────────────────
+.layout-mask {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(2px);
+  z-index: 998;
+  transition: opacity var(--transition-duration);
 }

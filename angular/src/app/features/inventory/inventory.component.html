@@ -1,0 +1,560 @@
+<div class="grid grid-cols-12 gap-8">
+  <!-- Breadcrumb -->
+  <div class="col-span-12 flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 -mb-4">
+    <a routerLink="/" class="flex items-center gap-1.5 hover:text-indigo-500 dark:hover:text-indigo-400 hover:underline transition-colors">
+      <i class="pi pi-home"></i>
+      <span>Home</span>
+    </a>
+    <i class="pi pi-chevron-right text-[10px] text-slate-300 dark:text-slate-750"></i>
+    <span class="font-medium text-slate-700 dark:text-slate-300">Inventory</span>
+  </div>
+
+  <p-toast></p-toast>
+
+  <!-- Page Header -->
+  <div
+    class="col-span-12 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 p-6 rounded-xl shadow border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 transition-colors duration-200"
+  >
+    <div>
+      <h1 class="text-2xl font-bold text-slate-900 dark:text-slate-100">Inventory Management</h1>
+      <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">
+        Monitor stock levels, add new inventory items, and manage offline data sync.
+      </p>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <!-- Connection Status Badge -->
+      <div
+        [title]="isOnline() ? 'App is online' : 'App is offline'"
+        class="flex items-center gap-2 px-3 py-1.5 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-mono"
+      >
+        <span class="relative flex h-2 w-2">
+          <span
+            class="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75"
+            [class.bg-emerald-400]="isOnline()"
+            [class.bg-rose-400]="!isOnline()"
+          ></span>
+          <span
+            class="relative inline-flex rounded-full h-2 w-2"
+            [class.bg-emerald-500]="isOnline()"
+            [class.bg-rose-500]="!isOnline()"
+          ></span>
+        </span>
+        <span class="text-slate-700 dark:text-slate-300 font-semibold">{{
+          isOnline() ? 'ONLINE' : 'OFFLINE'
+        }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Metric Statistics Cards styled exactly like Sakai-NG's app-stats-widget -->
+  <app-metric-card
+    class="col-span-12 lg:col-span-6 xl:col-span-3"
+    title="Total SKU Types"
+    [value]="stats().totalSKUs"
+    icon="pi-barcode"
+    iconBgClass="bg-indigo-500/10"
+    iconColorClass="text-indigo-500 dark:text-indigo-400"
+    [footerValue]="stats().totalSKUs"
+    footerText="registered items"
+    footerColorClass="text-indigo-600 dark:text-indigo-400"
+  />
+
+  <app-metric-card
+    class="col-span-12 lg:col-span-6 xl:col-span-3"
+    title="Total Value (Cost)"
+    [value]="'$' + (stats().totalValue | number: '1.2-2')"
+    icon="pi-dollar"
+    iconBgClass="bg-emerald-500/10"
+    iconColorClass="text-emerald-500 dark:text-emerald-400"
+    [footerValue]="'$' + (stats().totalValue | number: '1.2-2')"
+    footerText="total inventory value"
+    footerColorClass="text-emerald-600 dark:text-emerald-400"
+  />
+
+  <app-metric-card
+    class="col-span-12 lg:col-span-6 xl:col-span-3"
+    title="Low Stock Alerts"
+    [value]="stats().lowStockCount"
+    icon="pi-exclamation-triangle"
+    [iconBgClass]="stats().lowStockCount > 0 ? 'bg-rose-500/10' : 'bg-slate-100 dark:bg-slate-800'"
+    [iconColorClass]="stats().lowStockCount > 0 ? 'text-rose-500' : 'text-slate-500 dark:text-slate-400'"
+    [footerValue]="stats().lowStockCount > 0 ? stats().lowStockCount : 'All clear'"
+    [footerText]="stats().lowStockCount > 0 ? 'require attention' : 'no low stock'"
+    [footerColorClass]="stats().lowStockCount > 0 ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400'"
+  />
+
+  <app-metric-card
+    class="col-span-12 lg:col-span-6 xl:col-span-3"
+    title="IndexedDB Cache"
+    value="Enabled"
+    icon="pi-database"
+    iconBgClass="bg-teal-500/10"
+    iconColorClass="text-teal-500 dark:text-teal-400"
+    footerValue="Offline-First"
+    footerText="storage active"
+    footerColorClass="text-teal-600 dark:text-teal-400"
+  />
+
+  <!-- Sakai-NG Style Card for Content -->
+  <div class="col-span-12 card space-y-6">
+    <!-- Sakai-NG Toolbar -->
+    <p-toolbar class="mb-4 block">
+      <ng-template pTemplate="start">
+        <div class="flex flex-wrap gap-2">
+          <p-button
+            label="New"
+            icon="pi pi-plus"
+            severity="success"
+            (onClick)="openAddDialog()"
+          ></p-button>
+          <p-button
+            label="Delete"
+            icon="pi pi-trash"
+            severity="danger"
+            (onClick)="deleteSelectedProducts()"
+            [disabled]="!selectedProducts || !selectedProducts.length"
+          ></p-button>
+        </div>
+      </ng-template>
+
+      <ng-template pTemplate="end">
+        <div class="flex flex-wrap gap-2">
+          @if (stats().pendingSyncCount > 0) {
+            <p-button
+              label="Sync ({{ stats().pendingSyncCount }} pending)"
+              icon="pi pi-sync"
+              [loading]="loading()"
+              severity="warn"
+              (onClick)="triggerSync()"
+            ></p-button>
+          }
+          <p-button
+            label="Export"
+            icon="pi pi-upload"
+            severity="help"
+            (onClick)="exportCSV()"
+          ></p-button>
+        </div>
+      </ng-template>
+    </p-toolbar>
+
+    <!-- Filters Panel -->
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <!-- Search Field -->
+      <span class="relative w-full md:w-80">
+        <input
+          pInputText
+          type="text"
+          [value]="searchQuery()"
+          (input)="onSearchChange($event)"
+          placeholder="Search SKU or Name..."
+          class="w-full font-sans"
+        />
+      </span>
+
+      <!-- Category Filter Buttons -->
+      <div class="flex flex-wrap items-center gap-2">
+        <span class="text-xs text-slate-400 font-medium">Filter Category:</span>
+        <p-button
+          label="All"
+          [outlined]="selectedCategory() !== null"
+          severity="secondary"
+          (onClick)="selectCategory(null)"
+          size="small"
+        >
+        </p-button>
+
+        @for (cat of categories(); track cat) {
+          <p-button
+            [label]="cat"
+            [outlined]="selectedCategory() !== cat"
+            severity="secondary"
+            (onClick)="selectCategory(cat)"
+            size="small"
+          >
+          </p-button>
+        }
+      </div>
+    </div>
+
+    <!-- PrimeNG Table with checkboxes & row actions -->
+    <div class="border border-slate-800 rounded-xl overflow-hidden shadow">
+      <p-table
+        #dt
+        [value]="products()"
+        [lazy]="true"
+        (onLazyLoad)="onLazyLoad($event)"
+        [paginator]="true"
+        [rows]="pageSize()"
+        [totalRecords]="totalCount()"
+        [loading]="loading()"
+        [rowsPerPageOptions]="[10, 20, 50]"
+        [(selection)]="selectedProducts"
+        [rowHover]="true"
+        dataKey="id"
+        styleClass="p-datatable-striped"
+      >
+        <ng-template pTemplate="header">
+          <tr>
+            <th style="width: 3rem">
+              <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+            </th>
+            <th pSortableColumn="sku" class="w-32">SKU <p-sortIcon field="sku"></p-sortIcon></th>
+            <th pSortableColumn="name">Product Name <p-sortIcon field="name"></p-sortIcon></th>
+            <th pSortableColumn="category" class="w-40">
+              Category <p-sortIcon field="category"></p-sortIcon>
+            </th>
+            <th pSortableColumn="quantityInStock" class="text-right w-40">
+              Stock Level <p-sortIcon field="quantityInStock"></p-sortIcon>
+            </th>
+            <th pSortableColumn="costPrice" class="text-right w-32">
+              Cost <p-sortIcon field="costPrice"></p-sortIcon>
+            </th>
+            <th pSortableColumn="sellingPrice" class="text-right w-32">
+              Price <p-sortIcon field="sellingPrice"></p-sortIcon>
+            </th>
+            <th class="w-48">Supplier</th>
+            <th class="text-center w-24">Sync</th>
+            <th style="min-width: 8rem"></th>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="body" let-product>
+          <tr>
+            <td>
+              <p-tableCheckbox [value]="product"></p-tableCheckbox>
+            </td>
+
+            <!-- SKU -->
+            <td>
+              <span class="font-mono font-semibold text-xs text-indigo-300">
+                {{ product.sku }}
+              </span>
+            </td>
+
+            <!-- Name -->
+            <td class="font-medium text-slate-100">
+              <div>
+                {{ product.name }}
+                @if (product.description) {
+                  <span
+                    class="block text-xs text-slate-500 font-normal mt-0.5 truncate max-w-xs"
+                    [title]="product.description"
+                  >
+                    {{ product.description }}
+                  </span>
+                }
+              </div>
+            </td>
+
+            <!-- Category -->
+            <td class="text-slate-300">
+              {{ product.category }}
+            </td>
+
+            <!-- Stock Level with Badge warning -->
+            <td class="text-right">
+              <span
+                [class]="
+                  product.quantityInStock <= product.reorderLevel
+                    ? 'text-rose-400 bg-rose-500/10 px-2 py-0.5 rounded text-xs font-semibold border border-rose-500/20'
+                    : 'text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded text-xs font-semibold border border-emerald-500/20'
+                "
+              >
+                {{ product.quantityInStock }}
+              </span>
+            </td>
+
+            <!-- Cost -->
+            <td class="text-right font-mono text-xs text-slate-300">
+              ${{ product.costPrice | number: '1.2-2' }}
+            </td>
+
+            <!-- Price -->
+            <td class="text-right font-mono text-xs text-slate-150 font-semibold">
+              ${{ product.sellingPrice | number: '1.2-2' }}
+            </td>
+
+            <!-- Supplier -->
+            <td class="text-slate-400 text-sm">
+              {{ product.supplier || '—' }}
+            </td>
+
+            <!-- Sync Status -->
+            <td class="text-center">
+              @switch (product.syncStatus) {
+                @case ('synced') {
+                  <i class="pi pi-check-circle text-emerald-400" title="Synced to backend"></i>
+                }
+                @case ('pending') {
+                  <i class="pi pi-sync text-amber-400 animate-spin" title="Sync pending"></i>
+                }
+                @case ('failed') {
+                  <i class="pi pi-exclamation-triangle text-rose-400" title="Sync failed"></i>
+                }
+                @default {
+                  <i class="pi pi-check-circle text-slate-500"></i>
+                }
+              }
+            </td>
+
+            <!-- Row Actions -->
+            <td>
+              <div class="flex gap-2 justify-end">
+                <p-button
+                  icon="pi pi-pencil"
+                  [rounded]="true"
+                  [outlined]="true"
+                  severity="success"
+                  (onClick)="editProduct(product)"
+                ></p-button>
+                <p-button
+                  icon="pi pi-trash"
+                  [rounded]="true"
+                  [outlined]="true"
+                  severity="danger"
+                  (onClick)="deleteProduct(product)"
+                ></p-button>
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+
+        <!-- Empty State -->
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="10" class="text-center p-8 text-slate-500">
+              <div class="flex flex-col items-center gap-2">
+                <i class="pi pi-info-circle text-3xl"></i>
+                <p class="font-semibold text-sm">No inventory items found</p>
+                <p class="text-xs text-slate-600">Try adjusting your filters or search terms.</p>
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </div>
+</div>
+
+<!-- Add/Edit Inventory Overlay Dialog Modal -->
+<p-dialog
+  [header]="editingProduct() ? 'Edit Product Details' : 'Register New Inventory Product'"
+  [(visible)]="displayAddDialog"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [style]="{ width: '480px' }"
+>
+  <form [formGroup]="productForm" (ngSubmit)="submitProduct()" class="flex flex-col gap-4 pt-4">
+    <!-- SKU -->
+    <div class="flex flex-col gap-1.5">
+      <label for="sku" class="font-semibold text-xs text-slate-300 uppercase tracking-wider"
+        >SKU Code *</label
+      >
+      <input
+        id="sku"
+        pInputText
+        type="text"
+        formControlName="sku"
+        placeholder="e.g. COF-LAT"
+        class="uppercase w-full"
+        [readonly]="!!editingProduct()"
+      />
+      @if (productForm.get('sku')?.touched && productForm.get('sku')?.errors) {
+        <small class="text-rose-400 text-xs">SKU is required (max 50 characters).</small>
+      }
+    </div>
+
+    <!-- Product Name -->
+    <div class="flex flex-col gap-1.5">
+      <label for="name" class="font-semibold text-xs text-slate-300 uppercase tracking-wider"
+        >Product Name *</label
+      >
+      <input
+        id="name"
+        pInputText
+        type="text"
+        formControlName="name"
+        placeholder="e.g. Caffe Latte"
+        class="w-full"
+      />
+      @if (productForm.get('name')?.touched && productForm.get('name')?.errors) {
+        <small class="text-rose-400 text-xs">Product name is required (max 150 characters).</small>
+      }
+    </div>
+
+    <!-- Category Dropdown -->
+    <div class="flex flex-col gap-1.5">
+      <label class="font-semibold text-xs text-slate-300 uppercase tracking-wider"
+        >Category *</label
+      >
+      <p-select
+        formControlName="category"
+        [options]="dropdownCategories()"
+        optionLabel="label"
+        optionValue="value"
+        appendTo="body"
+        class="w-full"
+      >
+      </p-select>
+    </div>
+
+    <!-- Custom Category Name (Conditional) -->
+    @if (isCustomCategory()) {
+      <div class="flex flex-col gap-1.5">
+        <label
+          for="customCategory"
+          class="font-semibold text-xs text-slate-300 uppercase tracking-wider"
+          >Custom Category Name *</label
+        >
+        <input
+          id="customCategory"
+          pInputText
+          type="text"
+          formControlName="customCategory"
+          placeholder="e.g. Syrups"
+          class="w-full"
+        />
+        @if (
+          productForm.get('customCategory')?.touched && productForm.get('customCategory')?.errors
+        ) {
+          <small class="text-rose-400 text-xs">Custom category name is required.</small>
+        }
+      </div>
+    }
+
+    <!-- Description -->
+    <div class="flex flex-col gap-1.5">
+      <label for="description" class="font-semibold text-xs text-slate-300 uppercase tracking-wider"
+        >Description</label
+      >
+      <textarea
+        id="description"
+        pInputText
+        formControlName="description"
+        rows="2"
+        placeholder="Brief details about the product..."
+        class="w-full resize-none"
+      ></textarea>
+    </div>
+
+    <!-- Stock Levels -->
+    <div class="grid grid-cols-2 gap-4">
+      <div class="flex flex-col gap-1.5">
+        <label
+          for="quantityInStock"
+          class="font-semibold text-xs text-slate-300 uppercase tracking-wider"
+          >Quantity in Stock *</label
+        >
+        <p-inputNumber
+          id="quantityInStock"
+          formControlName="quantityInStock"
+          [min]="0"
+          placeholder="0"
+          styleClass="w-full"
+        >
+        </p-inputNumber>
+        @if (
+          productForm.get('quantityInStock')?.touched && productForm.get('quantityInStock')?.errors
+        ) {
+          <small class="text-rose-400 text-xs">Quantity must be 0 or more.</small>
+        }
+      </div>
+
+      <div class="flex flex-col gap-1.5">
+        <label
+          for="reorderLevel"
+          class="font-semibold text-xs text-slate-300 uppercase tracking-wider"
+          >Reorder Level *</label
+        >
+        <p-inputNumber
+          id="reorderLevel"
+          formControlName="reorderLevel"
+          [min]="0"
+          placeholder="5"
+          styleClass="w-full"
+        >
+        </p-inputNumber>
+        @if (productForm.get('reorderLevel')?.touched && productForm.get('reorderLevel')?.errors) {
+          <small class="text-rose-400 text-xs">Reorder level must be 0 or more.</small>
+        }
+      </div>
+    </div>
+
+    <!-- Costs -->
+    <div class="grid grid-cols-2 gap-4">
+      <div class="flex flex-col gap-1.5">
+        <label for="costPrice" class="font-semibold text-xs text-slate-300 uppercase tracking-wider"
+          >Cost Price ($) *</label
+        >
+        <p-inputNumber
+          id="costPrice"
+          formControlName="costPrice"
+          [min]="0"
+          mode="decimal"
+          [minFractionDigits]="2"
+          [maxFractionDigits]="2"
+          placeholder="0.00"
+          styleClass="w-full"
+        >
+        </p-inputNumber>
+        @if (productForm.get('costPrice')?.touched && productForm.get('costPrice')?.errors) {
+          <small class="text-rose-400 text-xs">Cost price must be 0 or more.</small>
+        }
+      </div>
+
+      <div class="flex flex-col gap-1.5">
+        <label
+          for="sellingPrice"
+          class="font-semibold text-xs text-slate-300 uppercase tracking-wider"
+          >Selling Price ($) *</label
+        >
+        <p-inputNumber
+          id="sellingPrice"
+          formControlName="sellingPrice"
+          [min]="0"
+          mode="decimal"
+          [minFractionDigits]="2"
+          [maxFractionDigits]="2"
+          placeholder="0.00"
+          styleClass="w-full"
+        >
+        </p-inputNumber>
+        @if (productForm.get('sellingPrice')?.touched && productForm.get('sellingPrice')?.errors) {
+          <small class="text-rose-400 text-xs">Selling price must be 0 or more.</small>
+        }
+      </div>
+    </div>
+
+    <!-- Supplier -->
+    <div class="flex flex-col gap-1.5">
+      <label for="supplier" class="font-semibold text-xs text-slate-300 uppercase tracking-wider"
+        >Supplier Name</label
+      >
+      <input
+        id="supplier"
+        pInputText
+        type="text"
+        formControlName="supplier"
+        placeholder="Supplier Name"
+        class="w-full"
+      />
+    </div>
+
+    <!-- Actions Panel -->
+    <div class="flex justify-end gap-2 border-t border-slate-800 pt-4 mt-2">
+      <p-button label="Cancel" severity="secondary" [outlined]="true" (onClick)="closeAddDialog()">
+      </p-button>
+
+      <p-button
+        [label]="editingProduct() ? 'Update Product' : 'Save Product'"
+        type="submit"
+        [disabled]="loading() || productForm.invalid"
+        [loading]="loading()"
+      >
+      </p-button>
+    </div>
+  </form>
+</p-dialog>

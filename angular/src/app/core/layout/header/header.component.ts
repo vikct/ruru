@@ -18,11 +18,11 @@ export class AppHeaderComponent {
 
   readonly themeService = inject(ThemeService);
 
-  toggle(): void {
-    this.collapsed.update(v => !v);
-  }
-
-  toggleMobile(): void {
-    this.isMobileOpen.update(v => !v);
+  toggleMenu(): void {
+    if (window.innerWidth >= 992) {
+      this.collapsed.update(v => !v);
+    } else {
+      this.isMobileOpen.update(v => !v);
+    }
   }
 }

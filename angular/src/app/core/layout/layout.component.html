@@ -1,26 +1,14 @@
-<div class="layout-root" [class.sidebar-collapsed]="collapsed()">
-
-  <!-- ── Mobile overlay backdrop ─────────────────────────────── -->
-  @if (isMobileOpen()) {
-    <div class="mobile-backdrop" (click)="isMobileOpen.set(false)"></div>
-  }
-
-  <!-- Modular Sidebar Component -->
+<div class="layout-wrapper" [ngClass]="containerClass()">
+  <app-header [(collapsed)]="collapsed" [(isMobileOpen)]="isMobileOpen" />
   <app-sidebar [(collapsed)]="collapsed" [(isMobileOpen)]="isMobileOpen" />
 
-  <!-- ════════════════════════════════════════════════════════════
-       MAIN COLUMN  (header + content)
-  ═══════════════════════════════════════════════════════════════ -->
-  <div class="main-column">
-
-    <!-- Modular Header Component -->
-    <app-header [(collapsed)]="collapsed" [(isMobileOpen)]="isMobileOpen" />
-
-    <!-- Page content slot -->
-    <main class="page-content">
+  <div class="layout-main-container">
+    <div class="layout-main">
       <ng-content></ng-content>
-    </main>
-
+    </div>
   </div>
 
+  @if (isMobileOpen()) {
+    <div class="layout-mask" (click)="isMobileOpen.set(false)"></div>
+  }
 </div>
