@@ -4,15 +4,15 @@
 
 :host {
   position: fixed;
-  width: var(--sidebar-width, 280px);
-  height: calc(100vh - var(--topbar-height, 70px));
-  top: var(--topbar-height, 70px);
+  width: var(--sidebar-width);
+  height: calc(100vh - var(--topbar-height));
+  top: var(--topbar-height);
   left: 0;
   z-index: 996; // Just behind topbar (997)
   background: var(--bg-sidebar);
   border-right: 1px solid var(--border);
-  transition: width var(--transition-duration, 0.2s) var(--transition-timing, cubic-bezier(0.05, 0.74, 0.2, 0.99)),
-              transform var(--transition-duration, 0.2s) var(--transition-timing, cubic-bezier(0.05, 0.74, 0.2, 0.99));
+  transition: width var(--transition-duration) var(--transition-timing),
+              transform var(--transition-duration) var(--transition-timing);
   display: flex;
   flex-direction: column;
 }
@@ -23,7 +23,7 @@
   flex-direction: column;
   height: 100%;
   box-sizing: border-box;
-  transition: padding var(--transition-duration, 0.2s);
+  transition: padding var(--transition-duration);
 }
 
 // ── Menu List ─────────────────────────────────────────────
@@ -133,8 +133,8 @@
     width: 6px;
     height: 6px;
     border-radius: 50%;
-    background-color: var(--status-open, #10b981);
-    box-shadow: 0 0 8px var(--status-open, #10b981);
+    background-color: var(--status-open);
+    box-shadow: 0 0 8px var(--status-open);
   }
 }
 

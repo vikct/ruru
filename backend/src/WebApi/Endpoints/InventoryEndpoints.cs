@@ -19,7 +19,7 @@ public class InventoryEndpoints : ICarterModule
 
         group.MapGet("", async (
             [FromQuery] string? search,
-            [FromQuery] string? category,
+            [FromQuery(Name = "category")] string[]? categories,
             [FromQuery] string? sortBy,
             [FromQuery] bool? sortDescending,
             [FromQuery] int? page,
@@ -30,7 +30,7 @@ public class InventoryEndpoints : ICarterModule
             var query = new GetProductsQuery
             {
                 Search = search,
-                Category = category,
+                Categories = categories != null ? new List<string>(categories) : null,
                 SortBy = sortBy,
                 SortDescending = sortDescending ?? false,
                 Page = page ?? 1,

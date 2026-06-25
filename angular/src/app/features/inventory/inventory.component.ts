@@ -1,31 +1,30 @@
-import { Component, OnInit, signal, effect, computed, ViewChild } from '@angular/core';
+import { Component, OnInit, signal, effect, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import {
-  FormBuilder,
-  FormGroup,
-  Validators,
-  ReactiveFormsModule,
-  FormsModule,
-} from '@angular/forms';
 import { CoreModule } from '../../core/core.module';
 import { InventoryService } from './inventory.service';
 import { LocalProduct } from '../../core/db.service';
 import { MessageService } from 'primeng/api';
-import { Table } from 'primeng/table';
 import { forkJoin } from 'rxjs';
 import { MetricCardComponent } from './components/metric-card.component';
+import { InventoryListComponent } from './inventory-list/inventory-list.component';
+import { ProductDialogComponent } from './components/product-dialog.component';
 
 @Component({
   selector: 'app-inventory',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, CoreModule, MetricCardComponent, RouterLink],
+  imports: [
+    CommonModule,
+    CoreModule,
+    MetricCardComponent,
+    RouterLink,
+    InventoryListComponent,
+    ProductDialogComponent,
+  ],
   templateUrl: './inventory.component.html',
   styleUrl: './inventory.component.scss',
 })
 export class InventoryComponent implements OnInit {
-  @ViewChild('dt') dt!: Table;
-
   // Data Signals
   readonly products = signal<LocalProduct[]>([]);
   readonly totalCount = signal<number>(0);
@@ -40,9 +39,6 @@ export class InventoryComponent implements OnInit {
     const list = this.products();
     const totalSKUs = this.totalCount();
 
-    // Note: since we only have the current page's products loaded in the signal,
-    // we'll calculate local totals. For accurate global stats in a real app
-    // we'd query the DB, but since we retrieve lists we can compute it.
     let totalVal = 0;
     let lowStockCount = 0;
     let pendingSyncCount = 0;
@@ -67,14 +63,8 @@ export class InventoryComponent implements OnInit {
 
   // Filter Signals
   readonly categories = signal<string[]>(['Coffee', 'Bakery', 'Merchandise', 'Beverages', 'Other']);
-  readonly selectedCategory = signal<string | null>(null);
+  readonly selectedCategories = signal<string[]>([]);
   readonly searchQuery = signal<string>('');
-
-  readonly dropdownCategories = computed(() => {
-    const list = this.categories().map((cat) => ({ label: cat, value: cat }));
-    list.push({ label: '+ Add Custom Category...', value: 'CUSTOM' });
-    return list;
-  });
 
   // Pagination & Sort Signals
   readonly page = signal<number>(1);
@@ -84,16 +74,11 @@ export class InventoryComponent implements OnInit {
 
   // UI Control Signals
   readonly displayAddDialog = signal<boolean>(false);
-  readonly isCustomCategory = signal<boolean>(false);
-
-  // Form
-  productForm!: FormGroup;
 
   // Online connection status
   isOnline = signal(navigator.onLine);
 
   constructor(
-    private fb: FormBuilder,
     private inventoryService: InventoryService,
     private messageService: MessageService,
   ) {
@@ -108,35 +93,7 @@ export class InventoryComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.initForm();
     this.loadProducts();
-  }
-
-  initForm(): void {
-    this.productForm = this.fb.group({
-      sku: ['', [Validators.required, Validators.maxLength(50)]],
-      name: ['', [Validators.required, Validators.maxLength(150)]],
-      description: [''],
-      category: ['Coffee', Validators.required],
-      customCategory: [''],
-      quantityInStock: [0, [Validators.required, Validators.min(0)]],
-      reorderLevel: [5, [Validators.required, Validators.min(0)]],
-      costPrice: [0.0, [Validators.required, Validators.min(0)]],
-      sellingPrice: [0.0, [Validators.required, Validators.min(0)]],
-      supplier: [''],
-    });
-
-    // Toggle custom category input when "Other" is selected or when a custom option is needed
-    this.productForm.get('category')?.valueChanges.subscribe((val) => {
-      if (val === 'CUSTOM') {
-        this.isCustomCategory.set(true);
-        this.productForm.get('customCategory')?.setValidators([Validators.required]);
-      } else {
-        this.isCustomCategory.set(false);
-        this.productForm.get('customCategory')?.clearValidators();
-      }
-      this.productForm.get('customCategory')?.updateValueAndValidity();
-    });
   }
 
   loadProducts(): void {
@@ -144,7 +101,7 @@ export class InventoryComponent implements OnInit {
     this.inventoryService
       .getProducts(
         this.searchQuery(),
-        this.selectedCategory() || undefined,
+        this.selectedCategories(),
         this.page(),
         this.pageSize(),
         this.sortBy(),
@@ -179,19 +136,6 @@ export class InventoryComponent implements OnInit {
     });
   }
 
-  onSearchChange(event: Event): void {
-    const val = (event.target as HTMLInputElement).value;
-    this.searchQuery.set(val);
-    this.page.set(1);
-    this.loadProducts();
-  }
-
-  selectCategory(category: string | null): void {
-    this.selectedCategory.set(category);
-    this.page.set(1);
-    this.loadProducts();
-  }
-
   onLazyLoad(event: any): void {
     const newPage = Math.floor((event.first ?? 0) / (event.rows ?? 10)) + 1;
     this.page.set(newPage);
@@ -207,14 +151,6 @@ export class InventoryComponent implements OnInit {
 
   openAddDialog(): void {
     this.editingProduct.set(null);
-    this.productForm.reset({
-      category: 'Coffee',
-      quantityInStock: 0,
-      reorderLevel: 5,
-      costPrice: 0.0,
-      sellingPrice: 0.0,
-    });
-    this.isCustomCategory.set(false);
     this.displayAddDialog.set(true);
   }
 
@@ -225,24 +161,6 @@ export class InventoryComponent implements OnInit {
 
   editProduct(product: LocalProduct): void {
     this.editingProduct.set(product);
-
-    // Check if product's category exists in standard list
-    const hasPresetCategory = this.categories().includes(product.category);
-
-    this.productForm.reset({
-      sku: product.sku,
-      name: product.name,
-      description: product.description || '',
-      category: hasPresetCategory ? product.category : 'CUSTOM',
-      customCategory: hasPresetCategory ? '' : product.category,
-      quantityInStock: product.quantityInStock,
-      reorderLevel: product.reorderLevel,
-      costPrice: product.costPrice,
-      sellingPrice: product.sellingPrice,
-      supplier: product.supplier || '',
-    });
-
-    this.isCustomCategory.set(!hasPresetCategory);
     this.displayAddDialog.set(true);
   }
 
@@ -256,7 +174,6 @@ export class InventoryComponent implements OnInit {
             summary: 'Product Deleted',
             detail: `"${product.name}" has been deleted successfully.`,
           });
-          // Remove from selection if it was selected
           this.selectedProducts = this.selectedProducts.filter((p) => p.id !== product.id);
           this.loadProducts();
         },
@@ -306,20 +223,29 @@ export class InventoryComponent implements OnInit {
     }
   }
 
-  exportCSV(): void {
-    if (this.dt) {
-      this.dt.exportCSV();
-    }
+  triggerSync(): void {
+    this.loading.set(true);
+    this.inventoryService.syncPendingProducts().subscribe({
+      next: () => {
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Sync Complete',
+          detail: 'Offline changes uploaded to the cloud database.',
+        });
+        this.loadProducts();
+      },
+      error: () => {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Sync Failed',
+          detail: 'Could not connect to server. Please try again later.',
+        });
+        this.loading.set(false);
+      },
+    });
   }
 
-  submitProduct(): void {
-    if (this.productForm.invalid) {
-      this.productForm.markAllAsTouched();
-      return;
-    }
-
-    const formValues = this.productForm.value;
-
+  onSaveProduct(formValues: any): void {
     // Resolve category name (standard preset or custom entered text)
     let categoryName = formValues.category;
     if (categoryName === 'CUSTOM') {
@@ -348,32 +274,25 @@ export class InventoryComponent implements OnInit {
           this.messageService.add({
             severity: 'success',
             summary: 'Product Updated',
-            detail: `"${product.name}" has been updated successfully. ${
-              product.syncStatus === 'pending' ? '(Offline Queue)' : '(Synced)'
-            }`,
+            detail: `"${product.name}" has been updated successfully.`,
           });
-
-          // Add custom category to local filters list if it doesn't exist
           if (!this.categories().includes(product.category)) {
             this.categories.update((cats) => [...cats, product.category]);
           }
-
           this.displayAddDialog.set(false);
           this.editingProduct.set(null);
           this.loadProducts();
         },
         error: (err) => {
-          const errorDetail = err.error?.errors?.Sku?.[0] || 'Failed to update product.';
           this.messageService.add({
             severity: 'error',
             summary: 'Save Error',
-            detail: errorDetail,
+            detail: 'Failed to update product.',
           });
           this.loading.set(false);
         },
       });
     } else {
-      // Prepare payload for creation
       const newProduct = {
         id: this.generateUUID(),
         sku: formValues.sku.trim().toUpperCase(),
@@ -392,52 +311,24 @@ export class InventoryComponent implements OnInit {
           this.messageService.add({
             severity: 'success',
             summary: 'Product Created',
-            detail: `"${product.name}" has been added successfully. ${
-              product.syncStatus === 'pending' ? '(Offline Queue)' : '(Synced)'
-            }`,
+            detail: `"${product.name}" has been added successfully.`,
           });
-
-          // Add custom category to local filters list if it doesn't exist
           if (!this.categories().includes(product.category)) {
             this.categories.update((cats) => [...cats, product.category]);
           }
-
           this.displayAddDialog.set(false);
           this.loadProducts();
         },
         error: (err) => {
-          const errorDetail = err.error?.errors?.Sku?.[0] || 'Failed to create product.';
           this.messageService.add({
             severity: 'error',
             summary: 'Save Error',
-            detail: errorDetail,
+            detail: 'Failed to create product.',
           });
           this.loading.set(false);
         },
       });
     }
-  }
-
-  triggerSync(): void {
-    this.loading.set(true);
-    this.inventoryService.syncPendingProducts().subscribe({
-      next: () => {
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Sync Complete',
-          detail: 'Offline changes uploaded to the cloud database.',
-        });
-        this.loadProducts();
-      },
-      error: () => {
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Sync Failed',
-          detail: 'Could not connect to server. Please try again later.',
-        });
-        this.loading.set(false);
-      },
-    });
   }
 
   private generateUUID(): string {

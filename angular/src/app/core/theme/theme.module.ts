@@ -17,6 +17,8 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { SelectModule } from 'primeng/select';
 import { ToastModule } from 'primeng/toast';
 import { ToolbarModule } from 'primeng/toolbar';
+import { MultiSelectModule } from 'primeng/multiselect';
+import { IftaLabelModule } from 'primeng/iftalabel';
 import { MessageService } from 'primeng/api';
 
 @NgModule({
@@ -33,7 +35,9 @@ import { MessageService } from 'primeng/api';
     InputNumberModule,
     SelectModule,
     ToastModule,
-    ToolbarModule
+    ToolbarModule,
+    MultiSelectModule,
+    IftaLabelModule
   ],
   providers: [
     provideAnimationsAsync(),
@@ -59,7 +63,9 @@ import { MessageService } from 'primeng/api';
     InputNumberModule,
     SelectModule,
     ToastModule,
-    ToolbarModule
+    ToolbarModule,
+    MultiSelectModule,
+    IftaLabelModule
   ]
 })
 export class ThemeModule {}

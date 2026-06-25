@@ -12,7 +12,7 @@ namespace Ruru.Application.Features.Inventory.Queries.GetProducts;
 public record GetProductsQuery : IRequest<PaginatedResult<ProductDto>>
 {
     public string? Search { get; init; }
-    public string? Category { get; init; }
+    public List<string>? Categories { get; init; }
     public string? SortBy { get; init; }
     public bool SortDescending { get; init; }
     public int Page { get; init; } = 1;
@@ -49,10 +49,10 @@ public class GetProductsQueryHandler : IRequestHandler<GetProductsQuery, Paginat
         }
 
         // Category Filter
-        if (!string.IsNullOrWhiteSpace(request.Category))
+        if (request.Categories != null && request.Categories.Any())
         {
-            var categoryLower = request.Category.ToLower();
-            query = query.Where(p => p.Category.ToLower() == categoryLower);
+            var categoriesLower = request.Categories.Select(c => c.ToLower()).ToList();
+            query = query.Where(p => categoriesLower.Contains(p.Category.ToLower()));
         }
 
         // Sorting

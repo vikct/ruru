@@ -4,7 +4,7 @@
     background: var(--bg-base);
     border: 1px solid var(--border);
     padding: 1rem;
-    border-radius: 8px;
+    border-radius: 3rem;
     margin-bottom: 1.5rem;
     display: flex;
     align-items: center;
@@ -157,27 +157,6 @@
         color: var(--accent) !important;
         font-weight: 500;
       }
-    }
-  }
-
-  // Buttons customization to align with Sakai design
-  .p-button {
-    border-radius: 6px;
-    font-weight: 500;
-    font-size: 0.875rem;
-    padding: 0.5rem 1rem;
-    transition:
-      transform 0.1s ease,
-      filter 0.15s ease;
-
-    &:active {
-      transform: scale(0.98);
-    }
-
-    &.p-button-icon-only {
-      padding: 0.5rem !important;
-      width: 2.25rem;
-      height: 2.25rem;
     }
   }
 

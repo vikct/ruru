@@ -1,3 +1,6 @@
-@use './_variables';
-@use './_components';
-@use './_global';
+@forward './tokens';
+@forward './reset';
+@forward './typography';
+@forward './scrollbar';
+@forward './components/components';
+@forward './vendor/primeng';

@@ -1,164 +1,69 @@
+@reference "tailwindcss";
+
 // ──────────────────────────────────────────────────────────
-// Topbar Styling (Sakai-NG Conventions)
+// Topbar Styling (Sakai-NG Conventions via Tailwind)
 // ──────────────────────────────────────────────────────────
 
 .layout-topbar {
-  position: fixed;
-  height: 70px;
-  z-index: 997;
-  left: 0;
-  top: 0;
-  width: 100%;
-  padding: 0 2rem;
-  background: var(--bg-topbar);
-  backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  transition: background 250ms ease, border-color 250ms ease;
-
-  @media (max-width: 991px) {
-    padding: 0 1rem;
-  }
+  @apply fixed h-[var(--topbar-height)] z-[997] left-0 top-0 w-full px-8 bg-[var(--bg-topbar)] backdrop-blur-md border-b border-[var(--border)] flex items-center justify-between transition-all duration-250 max-[991px]:px-4;
 }
 
 // ── Logo ──────────────────────────────────────────────────
 .layout-topbar-logo {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  text-decoration: none;
-  color: var(--text-primary);
-  font-weight: 700;
-  font-size: 1.25rem;
-  letter-spacing: -0.025em;
+  @apply flex items-center gap-3 no-underline text-[var(--text-primary)] font-bold text-xl tracking-tight;
 
   .logo-icon-wrapper {
-    width: 38px;
-    height: 38px;
-    background: var(--bg-item-active);
-    color: var(--accent);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 10px;
-    border: 1px solid var(--border);
-    font-size: 1.25rem;
-    transition: background 0.2s;
+    @apply w-[38px] h-[38px] bg-[var(--bg-item-active)] flex items-center justify-center rounded-[10px] border border-[var(--border)] text-xl transition-colors duration-200 text-[var(--accent)];
   }
 
   &:hover {
     .logo-icon-wrapper {
-      background: var(--accent-glow);
+      @apply bg-[var(--accent-glow)];
     }
   }
 }
 
 // ── General Button Styles ─────────────────────────────────
 .layout-topbar-button {
-  background: transparent;
-  border: none;
-  outline: none;
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  color: var(--text-muted);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: background-color 0.2s, color 0.2s;
+  @apply bg-transparent border-none outline-none w-10 h-10 rounded-full text-[var(--text-muted)] inline-flex items-center justify-center cursor-pointer transition-all duration-200;
 
   i {
-    font-size: 1.25rem;
+    @apply text-xl;
   }
 
   &:hover {
-    background-color: var(--bg-item-hover);
-    color: var(--text-primary);
+    @apply bg-[var(--bg-item-hover)] text-[var(--text-primary)];
   }
 
   &.profile-btn {
-    padding: 0;
-    overflow: hidden;
+    @apply p-0 overflow-hidden;
   }
 }
 
 // Menu toggle button
 .layout-menu-button {
-  margin-left: 2rem;
-  margin-right: auto;
-
-  @media (max-width: 991px) {
-    margin-left: 1rem;
-  }
+  @apply ml-8 mr-auto max-[991px]:ml-4;
 }
 
 // ── Right Side Menu & Search ──────────────────────────────
 .layout-topbar-menu {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-
-  @media (max-width: 991px) {
-    gap: 0.5rem;
-  }
+  @apply flex items-center gap-3 max-[991px]:gap-2;
 }
 
 // ── Search bar ────────────────────────────────────────────
 .layout-topbar-search {
-  position: relative;
-  display: flex;
-  align-items: center;
-  background: var(--bg-item-hover);
-  border: 1px solid var(--border);
-  border-radius: 99px;
-  padding: 0 0.75rem 0 2.5rem;
-  height: 38px;
-  width: 240px;
-  transition: width 0.2s, border-color 0.2s;
-
-  @media (max-width: 640px) {
-    display: none; // Hide on small mobile
-  }
+  @apply relative hidden sm:flex items-center bg-[var(--bg-item-hover)] border border-[var(--border)] rounded-full pl-10 pr-3 h-[38px] w-[240px] transition-all duration-200 focus-within:w-[280px] focus-within:border-[var(--accent)];
 
   .search-icon {
-    position: absolute;
-    left: 0.875rem;
-    color: var(--text-muted);
-    font-size: 0.875rem;
+    @apply absolute left-3.5 text-[var(--text-muted)] text-[14px];
   }
 
   .search-input {
-    width: 100%;
-    border: none;
-    outline: none;
-    background: transparent;
-    color: var(--text-primary);
-    font-size: 0.875rem;
-    padding: 0;
-
-    &::placeholder {
-      color: var(--text-muted);
-      opacity: 0.7;
-    }
+    @apply w-full border-none outline-none bg-transparent text-[var(--text-primary)] text-sm p-0 placeholder:text-[var(--text-muted)] placeholder:opacity-70;
   }
 
   .search-kbd {
-    background: var(--bg-item-active);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    padding: 2px 6px;
-    font-size: 10px;
-    font-family: inherit;
-    color: var(--text-muted);
-    font-weight: 600;
-  }
-
-  &:focus-within {
-    border-color: var(--accent);
-    width: 280px;
+    @apply bg-[var(--bg-item-active)] border border-[var(--border)] rounded px-1.5 py-0.5 text-[10px] text-[var(--text-muted)] font-semibold;
   }
 }
 

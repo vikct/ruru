@@ -1,5 +1,5 @@
 // ──────────────────────────────────────────────────────────
-// Theme Tokens & Variables (Colors & Palette)
+// Theme Tokens & Variables (Colors, Palette & Layouts)
 // ──────────────────────────────────────────────────────────
 
 :root {
@@ -24,7 +24,13 @@
   // Sakai compat variables
   --surface-card: #ffffff;
   --surface-border: rgba(15, 23, 42, 0.08);
-  --content-border-radius: 12px;
+
+  // 📐 Layout structural tokens
+  --sidebar-width: 280px;
+  --sidebar-collapsed-width: 72px;
+  --topbar-height: 70px;
+  --transition-duration: 0.2s;
+  --transition-timing: cubic-bezier(0.05, 0.74, 0.2, 0.99);
 }
 
 .ruru-dark {
@@ -49,9 +55,4 @@
   // Sakai compat variables
   --surface-card: #0d1526;
   --surface-border: rgba(255, 255, 255, 0.06);
-  --content-border-radius: 12px;
-}
-
-h1 h2 h3 h4 h5 h6 {
-  color: var(--text-primary);
 }

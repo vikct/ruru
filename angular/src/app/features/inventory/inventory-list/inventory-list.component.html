@@ -1,0 +1,232 @@
+<div class="card space-y-6">
+  <!-- Sakai-NG Toolbar -->
+  <p-toolbar class="mb-4 block">
+    <ng-template pTemplate="start">
+      <div class="flex flex-wrap gap-2">
+        @if (pendingSyncCount() > 0) {
+          <p-button
+            label="Sync ({{ pendingSyncCount() }} pending)"
+            icon="pi pi-sync"
+            [loading]="loading()"
+            severity="warn"
+            (onClick)="sync.emit()"
+          ></p-button>
+        }
+        <p-button
+          text
+          raised
+          rounded
+          icon="pi pi-upload"
+          severity="help"
+          (onClick)="exportCSV()"
+        ></p-button>
+
+        <p-button
+          text
+          raised
+          rounded
+          icon="pi pi-trash"
+          severity="danger"
+          (onClick)="deleteSelectedProducts.emit()"
+          [disabled]="!selectedProducts() || !selectedProducts().length"
+        ></p-button>
+      </div>
+    </ng-template>
+
+    <ng-template pTemplate="end">
+      <div class="flex flex-wrap gap-2">
+        <p-button
+          text
+          raised
+          rounded
+          icon="pi pi-plus"
+          severity="success"
+          (onClick)="addProduct.emit()"
+        ></p-button>
+      </div>
+    </ng-template>
+  </p-toolbar>
+
+  <!-- Filters Panel -->
+  <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+    <!-- Search Field -->
+    <span class="relative w-full md:w-80">
+      <input
+        pInputText
+        type="text"
+        [value]="searchQuery()"
+        (input)="onSearchChange($event)"
+        placeholder="Search SKU or Name..."
+        class="w-full font-sans"
+      />
+    </span>
+
+    <!-- Category Filter Dropdown -->
+    <p-iftalabel class="w-full md:w-64">
+      <p-multiselect
+        [options]="categories()"
+        [(ngModel)]="selectedCategories"
+        (onChange)="onCategoryChange()"
+        [showClear]="true"
+        class="w-full"
+      ></p-multiselect>
+      <label>Filter Category</label>
+    </p-iftalabel>
+  </div>
+
+  <!-- PrimeNG Table with checkboxes & row actions -->
+  <p-table
+    #dt
+    [value]="products()"
+    [lazy]="true"
+    (onLazyLoad)="onTableLazyLoad($event)"
+    [paginator]="true"
+    [rows]="pageSize()"
+    [totalRecords]="totalCount()"
+    [loading]="loading()"
+    [rowsPerPageOptions]="[10, 20, 50]"
+    [(selection)]="selectedProducts"
+    [rowHover]="true"
+    dataKey="id"
+    class="p-datatable-striped"
+  >
+    <ng-template pTemplate="header">
+      <tr>
+        <th style="width: 3rem">
+          <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+        </th>
+        <th pSortableColumn="sku" class="w-32">SKU <p-sortIcon field="sku"></p-sortIcon></th>
+        <th pSortableColumn="name">Product Name <p-sortIcon field="name"></p-sortIcon></th>
+        <th pSortableColumn="category" class="w-40">
+          Category <p-sortIcon field="category"></p-sortIcon>
+        </th>
+        <th pSortableColumn="quantityInStock" class="text-right w-40">
+          Stock <p-sortIcon field="quantityInStock"></p-sortIcon>
+        </th>
+        <th pSortableColumn="costPrice" class="text-right w-32">
+          Cost <p-sortIcon field="costPrice"></p-sortIcon>
+        </th>
+        <th pSortableColumn="sellingPrice" class="text-right w-32">
+          Price <p-sortIcon field="sellingPrice"></p-sortIcon>
+        </th>
+        <th class="w-48">Supplier</th>
+        <th class="text-center w-24">Sync</th>
+        <th style="min-width: 8rem"></th>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-product>
+      <tr>
+        <td>
+          <p-tableCheckbox [value]="product"></p-tableCheckbox>
+        </td>
+
+        <!-- SKU -->
+        <td>
+          <span class="font-mono font-semibold text-xs text-indigo-300">
+            {{ product.sku }}
+          </span>
+        </td>
+
+        <!-- Name -->
+        <td class="font-medium text-slate-100">
+          <div>
+            {{ product.name }}
+            @if (product.description) {
+              <span
+                class="block text-xs text-slate-500 font-normal mt-0.5 truncate max-w-xs"
+                [title]="product.description"
+              >
+                {{ product.description }}
+              </span>
+            }
+          </div>
+        </td>
+
+        <!-- Category -->
+        <td class="text-slate-300">
+          {{ product.category }}
+        </td>
+
+        <!-- Stock Level with Badge warning -->
+        <td class="text-right">
+          <span
+            [class]="
+              product.quantityInStock <= product.reorderLevel
+                ? 'text-rose-400 bg-rose-500/10 px-2 py-0.5 rounded text-xs font-semibold border border-rose-500/20'
+                : 'text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded text-xs font-semibold border border-emerald-500/20'
+            "
+          >
+            {{ product.quantityInStock }}
+          </span>
+        </td>
+
+        <!-- Cost -->
+        <td class="text-right font-mono text-xs text-slate-300">
+          ${{ product.costPrice | number: '1.2-2' }}
+        </td>
+
+        <!-- Price -->
+        <td class="text-right font-mono text-xs text-slate-150 font-semibold">
+          ${{ product.sellingPrice | number: '1.2-2' }}
+        </td>
+
+        <!-- Supplier -->
+        <td class="text-slate-400 text-sm">
+          {{ product.supplier || '—' }}
+        </td>
+
+        <!-- Sync Status -->
+        <td class="text-center">
+          @switch (product.syncStatus) {
+            @case ('synced') {
+              <i class="pi pi-check-circle text-emerald-400" title="Synced to backend"></i>
+            }
+            @case ('pending') {
+              <i class="pi pi-sync text-amber-400 animate-spin" title="Sync pending"></i>
+            }
+            @case ('failed') {
+              <i class="pi pi-exclamation-triangle text-rose-400" title="Sync failed"></i>
+            }
+            @default {
+              <i class="pi pi-check-circle text-slate-500"></i>
+            }
+          }
+        </td>
+
+        <!-- Row Actions -->
+        <td>
+          <div class="flex gap-2 justify-end">
+            <p-button
+              icon="pi pi-pencil"
+              [rounded]="true"
+              [outlined]="true"
+              severity="success"
+              (onClick)="editProduct.emit(product)"
+            ></p-button>
+            <p-button
+              icon="pi pi-trash"
+              [rounded]="true"
+              [outlined]="true"
+              severity="danger"
+              (onClick)="deleteProduct.emit(product)"
+            ></p-button>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+
+    <!-- Empty State -->
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="10" class="text-center p-8 text-slate-500">
+          <div class="flex flex-col items-center gap-2">
+            <i class="pi pi-info-circle text-3xl"></i>
+            <p class="font-semibold text-sm">No inventory items found</p>
+            <p class="text-xs text-slate-600">Try adjusting your filters or search terms.</p>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>

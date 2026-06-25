@@ -2,13 +2,6 @@
 // Layout Shell Styles (Sakai-NG Conventions)
 // ──────────────────────────────────────────────────────────
 
-:host {
-  --topbar-height: 70px;
-  --sidebar-width: 280px;
-  --sidebar-collapsed-width: 72px;
-  --transition-duration: 0.2s;
-  --transition-timing: cubic-bezier(0.05, 0.74, 0.2, 0.99);
-}
 
 .layout-wrapper {
   min-height: 100vh;

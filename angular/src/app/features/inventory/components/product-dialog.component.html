@@ -1,0 +1,220 @@
+<!-- Add/Edit Inventory Overlay Dialog Modal -->
+<p-dialog
+  [header]="product() ? 'Edit Product Details' : 'Register New Inventory Product'"
+  [(visible)]="visible"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [style]="{ width: '480px' }"
+>
+  <form [formGroup]="productForm" (ngSubmit)="submitProduct()" class="flex flex-col gap-4 pt-4">
+    <!-- SKU -->
+    <div class="flex flex-col gap-1.5">
+      <label for="sku" class="font-semibold text-xs text-slate-300 uppercase tracking-wider"
+        >SKU Code *</label
+      >
+      <input
+        id="sku"
+        pInputText
+        type="text"
+        formControlName="sku"
+        placeholder="e.g. COF-LAT"
+        class="uppercase w-full"
+        [readonly]="!!product()"
+      />
+      @if (productForm.get('sku')?.touched && productForm.get('sku')?.errors) {
+        <small class="text-rose-400 text-xs">SKU is required (max 50 characters).</small>
+      }
+    </div>
+
+    <!-- Product Name -->
+    <div class="flex flex-col gap-1.5">
+      <label for="name" class="font-semibold text-xs text-slate-300 uppercase tracking-wider"
+        >Product Name *</label
+      >
+      <input
+        id="name"
+        pInputText
+        type="text"
+        formControlName="name"
+        placeholder="e.g. Caffe Latte"
+        class="w-full"
+      />
+      @if (productForm.get('name')?.touched && productForm.get('name')?.errors) {
+        <small class="text-rose-400 text-xs">Product name is required (max 150 characters).</small>
+      }
+    </div>
+
+    <!-- Category Dropdown -->
+    <div class="flex flex-col gap-1.5">
+      <label class="font-semibold text-xs text-slate-300 uppercase tracking-wider"
+        >Category *</label
+      >
+      <p-select
+        formControlName="category"
+        [options]="dropdownCategories()"
+        optionLabel="label"
+        optionValue="value"
+        appendTo="body"
+        class="w-full"
+      >
+      </p-select>
+    </div>
+
+    <!-- Custom Category Name (Conditional) -->
+    @if (isCustomCategory()) {
+      <div class="flex flex-col gap-1.5">
+        <label
+          for="customCategory"
+          class="font-semibold text-xs text-slate-300 uppercase tracking-wider"
+          >Custom Category Name *</label
+        >
+        <input
+          id="customCategory"
+          pInputText
+          type="text"
+          formControlName="customCategory"
+          placeholder="e.g. Syrups"
+          class="w-full"
+        />
+        @if (
+          productForm.get('customCategory')?.touched && productForm.get('customCategory')?.errors
+        ) {
+          <small class="text-rose-400 text-xs">Custom category name is required.</small>
+        }
+      </div>
+    }
+
+    <!-- Description -->
+    <div class="flex flex-col gap-1.5">
+      <label for="description" class="font-semibold text-xs text-slate-300 uppercase tracking-wider"
+        >Description</label
+      >
+      <textarea
+        id="description"
+        pInputText
+        formControlName="description"
+        rows="2"
+        placeholder="Brief details about the product..."
+        class="w-full resize-none"
+      ></textarea>
+    </div>
+
+    <!-- Stock Levels -->
+    <div class="grid grid-cols-2 gap-4">
+      <div class="flex flex-col gap-1.5">
+        <label
+          for="quantityInStock"
+          class="font-semibold text-xs text-slate-300 uppercase tracking-wider"
+          >Quantity in Stock *</label
+        >
+        <p-inputNumber
+          id="quantityInStock"
+          formControlName="quantityInStock"
+          [min]="0"
+          placeholder="0"
+          styleClass="w-full"
+        >
+        </p-inputNumber>
+        @if (
+          productForm.get('quantityInStock')?.touched && productForm.get('quantityInStock')?.errors
+        ) {
+          <small class="text-rose-400 text-xs">Quantity must be 0 or more.</small>
+        }
+      </div>
+
+      <div class="flex flex-col gap-1.5">
+        <label
+          for="reorderLevel"
+          class="font-semibold text-xs text-slate-300 uppercase tracking-wider"
+          >Reorder Level *</label
+        >
+        <p-inputNumber
+          id="reorderLevel"
+          formControlName="reorderLevel"
+          [min]="0"
+          placeholder="5"
+          styleClass="w-full"
+        >
+        </p-inputNumber>
+        @if (productForm.get('reorderLevel')?.touched && productForm.get('reorderLevel')?.errors) {
+          <small class="text-rose-400 text-xs">Reorder level must be 0 or more.</small>
+        }
+      </div>
+    </div>
+
+    <!-- Costs -->
+    <div class="grid grid-cols-2 gap-4">
+      <div class="flex flex-col gap-1.5">
+        <label for="costPrice" class="font-semibold text-xs text-slate-300 uppercase tracking-wider"
+          >Cost Price ($) *</label
+        >
+        <p-inputNumber
+          id="costPrice"
+          formControlName="costPrice"
+          [min]="0"
+          mode="decimal"
+          [minFractionDigits]="2"
+          [maxFractionDigits]="2"
+          placeholder="0.00"
+          styleClass="w-full"
+        >
+        </p-inputNumber>
+        @if (productForm.get('costPrice')?.touched && productForm.get('costPrice')?.errors) {
+          <small class="text-rose-400 text-xs">Cost price must be 0 or more.</small>
+        }
+      </div>
+
+      <div class="flex flex-col gap-1.5">
+        <label
+          for="sellingPrice"
+          class="font-semibold text-xs text-slate-300 uppercase tracking-wider"
+          >Selling Price ($) *</label
+        >
+        <p-inputNumber
+          id="sellingPrice"
+          formControlName="sellingPrice"
+          [min]="0"
+          mode="decimal"
+          [minFractionDigits]="2"
+          [maxFractionDigits]="2"
+          placeholder="0.00"
+          styleClass="w-full"
+        >
+        </p-inputNumber>
+        @if (productForm.get('sellingPrice')?.touched && productForm.get('sellingPrice')?.errors) {
+          <small class="text-rose-400 text-xs">Selling price must be 0 or more.</small>
+        }
+      </div>
+    </div>
+
+    <!-- Supplier -->
+    <div class="flex flex-col gap-1.5">
+      <label for="supplier" class="font-semibold text-xs text-slate-300 uppercase tracking-wider"
+        >Supplier Name</label
+      >
+      <input
+        id="supplier"
+        pInputText
+        type="text"
+        formControlName="supplier"
+        placeholder="Supplier Name"
+        class="w-full"
+      />
+    </div>
+
+    <!-- Actions Panel -->
+    <div class="flex justify-end gap-2 border-t border-slate-800 pt-4 mt-2">
+      <p-button label="Cancel" severity="secondary" [outlined]="true" (onClick)="closeAddDialog()">
+      </p-button>
+
+      <p-button
+        [label]="product() ? 'Update Product' : 'Save Product'"
+        type="submit"
+        [disabled]="loading() || productForm.invalid"
+        [loading]="loading()"
+      >
+      </p-button>
+    </div>
+  </form>
+</p-dialog>

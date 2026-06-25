@@ -41,7 +41,7 @@ export class InventoryService {
 
   getProducts(
     search?: string,
-    category?: string,
+    categories?: string[],
     page = 1,
     pageSize = 10,
     sortBy?: string,
@@ -62,9 +62,9 @@ export class InventoryService {
           }
 
           // Category filtering
-          if (category) {
-            const cat = category.toLowerCase();
-            filtered = filtered.filter((p) => p.category.toLowerCase() === cat);
+          if (categories && categories.length > 0) {
+            const catsLower = categories.map((c) => c.toLowerCase());
+            filtered = filtered.filter((p) => catsLower.includes(p.category.toLowerCase()));
           }
 
           // Sorting
@@ -110,7 +110,11 @@ export class InventoryService {
       .set('sortDescending', sortDescending.toString());
 
     if (search) params = params.set('search', search);
-    if (category) params = params.set('category', category);
+    if (categories && categories.length > 0) {
+      categories.forEach((cat) => {
+        params = params.append('category', cat);
+      });
+    }
     if (sortBy) params = params.set('sortBy', sortBy);
 
     return this.http.get<PaginatedResult<LocalProduct>>(this.apiUrl, { params }).pipe(
@@ -124,14 +128,14 @@ export class InventoryService {
       }),
       catchError(() => {
         // Fallback to offline querying if API fails unexpectedly
-        return this.getProductsOffline(search, category, page, pageSize, sortBy, sortDescending);
+        return this.getProductsOffline(search, categories, page, pageSize, sortBy, sortDescending);
       }),
     );
   }
 
   private getProductsOffline(
     search?: string,
-    category?: string,
+    categories?: string[],
     page = 1,
     pageSize = 10,
     sortBy?: string,
@@ -148,9 +152,9 @@ export class InventoryService {
           );
         }
 
-        if (category) {
-          const cat = category.toLowerCase();
-          filtered = filtered.filter((p) => p.category.toLowerCase() === cat);
+        if (categories && categories.length > 0) {
+          const catsLower = categories.map((c) => c.toLowerCase());
+          filtered = filtered.filter((p) => catsLower.includes(p.category.toLowerCase()));
         }
 
         if (sortBy) {
