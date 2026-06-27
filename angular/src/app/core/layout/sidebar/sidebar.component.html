@@ -9,6 +9,7 @@
           class="layout-menuitem-root-action"
           [pTooltip]="collapsed() ? item.label : ''"
           tooltipPosition="right"
+          (click)="isMobileOpen.set(false)"
         >
           <i [class]="item.icon + ' layout-menuitem-icon'"></i>
           @if (!collapsed()) {
