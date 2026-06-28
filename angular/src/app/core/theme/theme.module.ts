@@ -37,7 +37,7 @@ import { MessageService } from 'primeng/api';
     ToastModule,
     ToolbarModule,
     MultiSelectModule,
-    IftaLabelModule
+    IftaLabelModule,
   ],
   providers: [
     provideAnimationsAsync(),
@@ -45,11 +45,15 @@ import { MessageService } from 'primeng/api';
       theme: {
         preset: Aura,
         options: {
-          darkModeSelector: '.ruru-dark'
-        }
-      }
+          darkModeSelector: '.ruru-dark',
+          cssLayer: {
+            name: 'ruru',
+            order: 'theme, base, primeng',
+          },
+        },
+      },
     }),
-    MessageService
+    MessageService,
   ],
   exports: [
     ButtonModule,
@@ -65,7 +69,7 @@ import { MessageService } from 'primeng/api';
     ToastModule,
     ToolbarModule,
     MultiSelectModule,
-    IftaLabelModule
-  ]
+    IftaLabelModule,
+  ],
 })
 export class ThemeModule {}
