@@ -1,0 +1,41 @@
+@reference "tailwindcss";
+
+:host ::ng-deep {
+  // Toolbar
+  .p-toolbar {
+    @apply bg-[var(--bg-base)] border border-[var(--border)] px-4 py-3 rounded-full mb-6 flex items-center justify-between flex-wrap gap-4;
+  }
+
+  // Table
+  .p-datatable {
+    .p-datatable-thead > tr > th {
+      @apply bg-[var(--bg-base)] text-[var(--text-primary)] font-semibold border-b border-[var(--border)] px-4 py-3 text-sm;
+    }
+
+    .p-datatable-tbody > tr {
+      @apply bg-[var(--bg-sidebar)] text-[var(--text-primary)] border-b border-[var(--border)] transition-colors duration-200;
+
+      &:hover {
+         @apply bg-[var(--bg-item-hover)];
+      }
+
+      &.p-highlight {
+        @apply bg-[var(--bg-item-active)] text-[var(--accent)];
+      }
+    }
+
+    .p-datatable-tbody > tr > td {
+      @apply px-4 py-3 text-sm border-none;
+    }
+  }
+
+  // Inputs
+  .p-inputtext,
+  .p-inputnumber-input {
+    @apply bg-[var(--bg-base)] border border-[var(--border)] text-[var(--text-primary)] rounded-md px-3 py-2 text-sm transition-all duration-150;
+
+    &:focus {
+      @apply border-[var(--accent)] outline-none ring-2 ring-[var(--accent-glow)];
+    }
+  }
+}

@@ -10,6 +10,7 @@ import { LocalProduct } from '../../../core/db.service';
   standalone: true,
   imports: [CommonModule, FormsModule, CoreModule],
   templateUrl: './inventory-list.component.html',
+  styleUrl: './inventory-list.component.scss',
 })
 export class InventoryListComponent {
   @ViewChild('dt') dt!: Table;

@@ -1,5 +1,5 @@
-<div class="card space-y-6">
-  <!-- Sakai-NG Toolbar -->
+<div class="space-y-6">
+  <!-- Toolbar -->
   <p-toolbar class="mb-4 block">
     <ng-template pTemplate="start">
       <div class="flex flex-wrap gap-2">
@@ -88,7 +88,6 @@
     [(selection)]="selectedProducts"
     [rowHover]="true"
     dataKey="id"
-    class="p-datatable-striped"
   >
     <ng-template pTemplate="header">
       <tr>
@@ -123,18 +122,18 @@
 
         <!-- SKU -->
         <td>
-          <span class="font-mono font-semibold text-xs text-indigo-300">
+          <span class="font-mono font-semibold text-xs text-[var(--accent)]">
             {{ product.sku }}
           </span>
         </td>
 
         <!-- Name -->
-        <td class="font-medium text-slate-100">
+        <td class="font-medium text-[var(--text-primary)]">
           <div>
             {{ product.name }}
             @if (product.description) {
               <span
-                class="block text-xs text-slate-500 font-normal mt-0.5 truncate max-w-xs"
+                class="block text-xs text-[var(--text-muted)] font-normal mt-0.5 truncate max-w-xs"
                 [title]="product.description"
               >
                 {{ product.description }}
@@ -144,7 +143,7 @@
         </td>
 
         <!-- Category -->
-        <td class="text-slate-300">
+        <td class="text-[var(--text-muted)]">
           {{ product.category }}
         </td>
 
@@ -162,17 +161,17 @@
         </td>
 
         <!-- Cost -->
-        <td class="text-right font-mono text-xs text-slate-300">
+        <td class="text-right font-mono text-xs text-[var(--text-muted)]">
           ${{ product.costPrice | number: '1.2-2' }}
         </td>
 
         <!-- Price -->
-        <td class="text-right font-mono text-xs text-slate-150 font-semibold">
+        <td class="text-right font-mono text-xs text-[var(--text-primary)] font-semibold">
           ${{ product.sellingPrice | number: '1.2-2' }}
         </td>
 
         <!-- Supplier -->
-        <td class="text-slate-400 text-sm">
+        <td class="text-[var(--text-muted)] text-sm">
           {{ product.supplier || '—' }}
         </td>
 
@@ -189,7 +188,7 @@
               <i class="pi pi-exclamation-triangle text-rose-400" title="Sync failed"></i>
             }
             @default {
-              <i class="pi pi-check-circle text-slate-500"></i>
+              <i class="pi pi-check-circle text-[var(--text-muted)]"></i>
             }
           }
         </td>
@@ -219,11 +218,11 @@
     <!-- Empty State -->
     <ng-template pTemplate="emptymessage">
       <tr>
-        <td colspan="10" class="text-center p-8 text-slate-500">
+        <td colspan="10" class="text-center p-8 text-[var(--text-muted)]">
           <div class="flex flex-col items-center gap-2">
             <i class="pi pi-info-circle text-3xl"></i>
             <p class="font-semibold text-sm">No inventory items found</p>
-            <p class="text-xs text-slate-600">Try adjusting your filters or search terms.</p>
+            <p class="text-xs text-[var(--text-dim)]">Try adjusting your filters or search terms.</p>
           </div>
         </td>
       </tr>
