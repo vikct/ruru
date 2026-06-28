@@ -35,4 +35,6 @@ yarn-error.log*
 .env.production
 .env.staging
 
-.superpowers/*
+# Agentic Assistant (Superpowers)
+.superpowers/
+docs/superpowers/
