@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Ruru.Application.Common.Interfaces;
 using Ruru.Infrastructure.Persistence;
+using Ruru.Infrastructure.Services;
 
 namespace Ruru.Infrastructure;
 
@@ -26,6 +27,8 @@ public static class DependencyInjection
 
         services.AddScoped<IApplicationDbContext>(provider =>
             provider.GetRequiredService<ApplicationDbContext>());
+
+        services.AddSingleton<ITotpService, TotpService>();
 
         return services;
     }

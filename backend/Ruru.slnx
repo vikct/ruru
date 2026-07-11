@@ -12,4 +12,7 @@
   <Folder Name="/src/WebApi/">
     <Project Path="src/WebApi/Ruru.WebApi.csproj" />
   </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Ruru.UnitTests/Ruru.UnitTests.csproj" />
+  </Folder>
 </Solution>
