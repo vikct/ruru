@@ -29,6 +29,7 @@ public static class DependencyInjection
             provider.GetRequiredService<ApplicationDbContext>());
 
         services.AddSingleton<ITotpService, TotpService>();
+        services.AddScoped<IIdentityService, IdentityService>();
 
         return services;
     }
