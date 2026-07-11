@@ -1,0 +1,85 @@
+<div class="page-container">
+  <div class="page-header">
+    <div>
+      <h1>Employee Management</h1>
+      <p class="subtitle">View and manage store employees, roles, and invite tokens.</p>
+    </div>
+    <button tuiButton [routerLink]="['/employees/new']" size="m">
+      Add Employee
+    </button>
+  </div>
+
+  @if (inviteLink()) {
+    <div class="invite-box">
+      <div class="invite-title">Invite Link Generated for {{ inviteEmployeeName() }}</div>
+      <p>Share this link with the employee to link their Authenticator app:</p>
+      <div class="invite-link-row">
+        <code class="invite-url">{{ inviteLink() }}</code>
+        <button tuiButton size="xs" (click)="inviteLink.set('')">Dismiss</button>
+      </div>
+    </div>
+  }
+
+  @if (loading()) {
+    <div class="loading-state">
+      <p>Loading employees...</p>
+    </div>
+  } @else if (error()) {
+    <div class="error-state">
+      <p>{{ error() }}</p>
+    </div>
+  } @else {
+    <div class="table-container">
+      <table class="employees-table">
+        <thead>
+          <tr>
+            <th>Employee Code</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Status</th>
+            <th>2FA (TOTP)</th>
+            <th class="actions-col">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (emp of employees(); track emp.id) {
+            <tr [class.inactive-row]="!emp.isActive">
+              <td class="code-cell">{{ emp.employeeCode }}</td>
+              <td class="name-cell">{{ emp.firstName }} {{ emp.lastName }}</td>
+              <td>{{ emp.email }}</td>
+              <td>{{ emp.phone || '-' }}</td>
+              <td>
+                <span class="status-badge" [class.status-active]="emp.isActive" [class.status-inactive]="!emp.isActive">
+                  {{ emp.isActive ? 'Active' : 'Inactive' }}
+                </span>
+              </td>
+              <td>
+                <span class="totp-badge" [class.totp-setup]="emp.isTotpSetUp" [class.totp-pending]="!emp.isTotpSetUp">
+                  {{ emp.isTotpSetUp ? 'Configured' : 'Pending' }}
+                </span>
+              </td>
+              <td class="actions-cell">
+                <button tuiButton appearance="flat" size="xs" [routerLink]="['/employees', emp.id, 'edit']">
+                  Edit
+                </button>
+                @if (emp.isActive && !emp.isTotpSetUp) {
+                  <button tuiButton appearance="flat" size="xs" (click)="sendInvite(emp)">
+                    Invite
+                  </button>
+                }
+                <button tuiButton appearance="flat" size="xs" [class.deactivate-btn]="emp.isActive" (click)="toggleStatus(emp)">
+                  {{ emp.isActive ? 'Deactivate' : 'Activate' }}
+                </button>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="7" class="empty-cell">No employees registered. Click "Add Employee" to create one.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

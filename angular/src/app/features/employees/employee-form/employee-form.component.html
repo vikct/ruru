@@ -1,0 +1,130 @@
+<div class="form-container">
+  <div class="form-header">
+    <h1>{{ isEditMode() ? 'Edit Employee' : 'Add Employee' }}</h1>
+    <p class="subtitle">Set up user details and assign workspace roles.</p>
+  </div>
+
+  @if (loading()) {
+    <div class="loading-state">
+      <p>Loading details...</p>
+    </div>
+  } @else {
+    <form (submit)="onSubmit()" class="employee-form">
+      <div class="form-grid">
+        <div class="form-group">
+          <label tuiLabel="Employee Code *" class="label-wrapper">
+            <input
+              tuiTextfield
+              type="text"
+              placeholder="e.g. EMP-101"
+              [(ngModel)]="employeeCode"
+              name="employeeCode"
+              [disabled]="isEditMode()"
+              required
+              class="form-input"
+            />
+          </label>
+        </div>
+
+        <div class="form-group">
+          <label tuiLabel="Email Address *" class="label-wrapper">
+            <input
+              tuiTextfield
+              type="email"
+              placeholder="e.g. employee@rurupos.com"
+              [(ngModel)]="email"
+              name="email"
+              required
+              class="form-input"
+            />
+          </label>
+        </div>
+
+        <div class="form-group">
+          <label tuiLabel="First Name *" class="label-wrapper">
+            <input
+              tuiTextfield
+              type="text"
+              placeholder="First name"
+              [(ngModel)]="firstName"
+              name="firstName"
+              required
+              class="form-input"
+            />
+          </label>
+        </div>
+
+        <div class="form-group">
+          <label tuiLabel="Last Name *" class="label-wrapper">
+            <input
+              tuiTextfield
+              type="text"
+              placeholder="Last name"
+              [(ngModel)]="lastName"
+              name="lastName"
+              required
+              class="form-input"
+            />
+          </label>
+        </div>
+
+        <div class="form-group full-width">
+          <label tuiLabel="Phone Number (Optional)" class="label-wrapper">
+            <input
+              tuiTextfield
+              type="tel"
+              placeholder="e.g. +60123456789"
+              [(ngModel)]="phone"
+              name="phone"
+              class="form-input"
+            />
+          </label>
+        </div>
+
+        <div class="form-group full-width">
+          <span class="section-title">Assign Roles *</span>
+          <div class="roles-checkbox-list">
+            @for (role of roles(); track role.id) {
+              <label class="role-checkbox-label">
+                <input
+                  type="checkbox"
+                  [checked]="selectedRoleIds().includes(role.id)"
+                  (change)="toggleRole(role.id, $any($event.target).checked)"
+                  class="role-checkbox"
+                />
+                <div class="role-info">
+                  <span class="role-name">{{ role.name }}</span>
+                  <span class="role-desc">{{ role.description }}</span>
+                </div>
+              </label>
+            }
+          </div>
+        </div>
+      </div>
+
+      @if (error()) {
+        <div class="error-message">
+          {{ error() }}
+        </div>
+      }
+
+      <div class="form-actions">
+        <button
+          tuiButton
+          type="button"
+          appearance="flat"
+          [routerLink]="['/employees']"
+        >
+          Cancel
+        </button>
+        <button
+          tuiButton
+          type="submit"
+          [disabled]="saving()"
+        >
+          {{ isEditMode() ? 'Save Changes' : 'Create Profile' }}
+        </button>
+      </div>
+    </form>
+  }
+</div>

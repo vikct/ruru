@@ -1,6 +1,6 @@
 <div class="layout-sidebar" [class.layout-sidebar-collapsed]="collapsed()">
   <ul class="layout-menu">
-    @for (item of navItems; track item.route) {
+    @for (item of menuItems(); track item.route) {
       <li>
         <a
           [routerLink]="item.route"
@@ -22,15 +22,27 @@
 
   <!-- Sidebar Footer: Register status + User Profile -->
   <div class="sidebar-footer">
-    <div class="user-profile" [pTooltip]="collapsed() ? 'Victor Tan (Administrator)' : ''" tooltipPosition="right">
-      <p-avatar label="VT" shape="circle" styleClass="footer-avatar" />
-      @if (!collapsed()) {
-        <div class="user-details">
-          <span class="user-name">Victor Tan</span>
-          <span class="user-role">Administrator</span>
-        </div>
-      }
-    </div>
+    @if (currentUser(); as user) {
+      <div class="user-profile" [pTooltip]="collapsed() ? (user.firstName + ' (' + userRole() + ')') : ''" tooltipPosition="right">
+        <p-avatar [label]="avatarLabel()" shape="circle" styleClass="footer-avatar" />
+        @if (!collapsed()) {
+          <div class="user-details">
+            <span class="user-name">{{ user.firstName }} {{ user.lastName }}</span>
+            <span class="user-role">{{ userRole() }}</span>
+          </div>
+        }
+      </div>
+    } @else {
+      <div class="user-profile" [routerLink]="['/auth/login']" style="cursor: pointer;" [pTooltip]="collapsed() ? 'Sign In' : ''" tooltipPosition="right">
+        <p-avatar icon="pi pi-user" shape="circle" styleClass="footer-avatar" />
+        @if (!collapsed()) {
+          <div class="user-details">
+            <span class="user-name">Guest</span>
+            <span class="user-role">Click to Sign In</span>
+          </div>
+        }
+      </div>
+    }
     <div class="register-status" [pTooltip]="collapsed() ? 'Register Open · Shift 1' : ''" tooltipPosition="right">
       <span class="status-dot"></span>
       @if (!collapsed()) {
