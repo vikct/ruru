@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { providePrimeNG } from 'primeng/config';
 import Aura from '@primeuix/themes/aura';
+import { provideTaiga } from '@taiga-ui/core';
 
 // PrimeNG Modules used across the app
 import { ButtonModule } from 'primeng/button';
@@ -53,6 +54,7 @@ import { MessageService } from 'primeng/api';
         },
       },
     }),
+    provideTaiga(),
     MessageService,
   ],
   exports: [

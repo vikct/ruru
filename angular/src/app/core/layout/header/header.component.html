@@ -1,36 +1,71 @@
-<div class="layout-topbar">
-  <a class="layout-topbar-logo" href="/">
+<header class="layout-topbar">
+  <!-- Logo -->
+  <a class="layout-topbar-logo" routerLink="/">
     <div class="logo-icon-wrapper">
-      <i class="pi pi-receipt"></i>
+      <tui-icon icon="@tui.receipt" class="text-xl" />
     </div>
     <span>Ruru POS</span>
   </a>
 
-  <button class="layout-menu-button layout-topbar-button" (click)="toggleMenu()" [pTooltip]="collapsed() ? 'Expand sidebar' : 'Collapse sidebar'" tooltipPosition="bottom">
-    <i class="pi pi-bars"></i>
+  <!-- Sidebar toggle button -->
+  <button
+    tuiIconButton
+    type="button"
+    appearance="flat-grayscale"
+    tuiHint="{{ collapsed() ? 'Expand sidebar' : 'Collapse sidebar' }}"
+    tuiHintDirection="bottom"
+    class="layout-menu-button"
+    (click)="toggleMenu()"
+  >
+    <tui-icon icon="@tui.menu" />
   </button>
 
   <div class="layout-topbar-menu">
     <!-- Global search -->
-    <div class="layout-topbar-search">
-      <i class="pi pi-search search-icon"></i>
-      <input type="text" class="search-input" placeholder="Quick search…" />
-      <span class="search-kbd">⌘K</span>
-    </div>
+    <tui-textfield tuiSize="m" class="layout-topbar-search">
+      <tui-icon tuiTextfieldIcon icon="@tui.search" />
+      <input tuiInput placeholder="Quick search… ⌘K" />
+    </tui-textfield>
 
     <!-- Notifications -->
-    <button class="layout-topbar-button" pBadge value="3" severity="danger">
-      <i class="pi pi-bell"></i>
-    </button>
+    <span class="relative inline-flex">
+      <button
+        tuiIconButton
+        type="button"
+        appearance="flat-grayscale"
+      >
+        <tui-icon icon="@tui.bell" />
+      </button>
+      <span
+        tuiBadge
+        size="s"
+        appearance="destructive"
+        class="absolute top-1 right-1 pointer-events-none"
+      >
+        3
+      </span>
+    </span>
 
     <!-- Theme Toggle -->
-    <button class="layout-topbar-button" (click)="themeService.toggleTheme()" [pTooltip]="themeService.isDarkMode() ? 'Switch to Light Mode' : 'Switch to Dark Mode'" tooltipPosition="bottom">
-      <i class="pi" [class.pi-sun]="themeService.isDarkMode()" [class.pi-moon]="!themeService.isDarkMode()"></i>
+    <button
+      tuiIconButton
+      type="button"
+      appearance="flat-grayscale"
+      tuiHint="{{ themeService.isDarkMode() ? 'Switch to Light Mode' : 'Switch to Dark Mode' }}"
+      tuiHintDirection="bottom"
+      (click)="themeService.toggleTheme()"
+    >
+      <tui-icon [icon]="themeService.isDarkMode() ? '@tui.sun' : '@tui.moon'" />
     </button>
 
     <!-- User profile avatar button -->
-    <button class="layout-topbar-button profile-btn">
-      <p-avatar label="VT" shape="circle" styleClass="topbar-avatar" />
+    <button
+      tuiIconButton
+      type="button"
+      appearance="flat-grayscale"
+      class="p-0 overflow-hidden"
+    >
+      <span tuiAvatar="VT" size="s"></span>
     </button>
   </div>
-</div>
+</header>

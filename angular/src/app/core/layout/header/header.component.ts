@@ -1,14 +1,24 @@
 import { Component, model, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TooltipModule } from 'primeng/tooltip';
-import { BadgeModule } from 'primeng/badge';
-import { AvatarModule } from 'primeng/avatar';
+import { RouterLink } from '@angular/router';
+import { TuiButton, TuiIcon, TuiHint, TuiTextfield, TuiInput } from '@taiga-ui/core';
+import { TuiAvatar, TuiBadge } from '@taiga-ui/kit';
 import { ThemeService } from '../../theme/theme.service';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule, TooltipModule, BadgeModule, AvatarModule],
+  imports: [
+    CommonModule,
+    RouterLink,
+    TuiButton,
+    TuiIcon,
+    TuiHint,
+    TuiTextfield,
+    TuiInput,
+    TuiAvatar,
+    TuiBadge
+  ],
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss'
 })

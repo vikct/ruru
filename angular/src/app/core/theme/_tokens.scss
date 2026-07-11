@@ -10,11 +10,20 @@
   --bg-item-hover: rgba(99, 102, 241, 0.08);
   --bg-item-active: rgba(99, 102, 241, 0.12);
 
+  // Taiga UI v5 theme mappings
+  --tui-text-primary: var(--text-primary);
+  --tui-text-secondary: var(--text-muted);
+  --tui-text-tertiary: var(--text-muted);
+  --tui-border-normal: var(--border);
+  --tui-background-base: var(--bg-sidebar);
+  --tui-background-neutral-1-hover: var(--bg-item-hover);
+  --tui-background-neutral-1-pressed: var(--bg-item-active);
+
   --accent: #6366f1;
   --accent-light: #4f46e5;
   --accent-glow: rgba(99, 102, 241, 0.15);
 
-  --border: rgba(15, 23, 42, 0.08);
+  --border: rgba(15, 23, 42, 0.20);
   --text-primary: #0f172a;
   --text-muted: #475569;
   --text-dim: #cbd5e1;
@@ -23,7 +32,7 @@
 
   // Sakai compat variables
   --surface-card: #ffffff;
-  --surface-border: rgba(15, 23, 42, 0.08);
+  --surface-border: rgba(15, 23, 42, 0.20);
 
   // 📐 Layout structural tokens
   --sidebar-width: 280px;
@@ -45,7 +54,7 @@
   --accent-light: #818cf8;
   --accent-glow: rgba(99, 102, 241, 0.35);
 
-  --border: rgba(255, 255, 255, 0.06);
+  --border: rgba(255, 255, 255, 0.12);
   --text-primary: #f1f5f9;
   --text-muted: #64748b;
   --text-dim: #334155;
@@ -54,5 +63,5 @@
 
   // Sakai compat variables
   --surface-card: #0d1526;
-  --surface-border: rgba(255, 255, 255, 0.06);
+  --surface-border: rgba(255, 255, 255, 0.12);
 }
