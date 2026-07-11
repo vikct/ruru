@@ -1,0 +1,59 @@
+<div class="login-container">
+  <div class="login-card">
+    <div class="login-header">
+      <h2>Ruru POS</h2>
+      <p>Select your profile and enter your 6-digit TOTP code to sign in.</p>
+    </div>
+
+    <form (submit)="onSubmit()" class="login-form">
+      <div class="form-group">
+        <label tuiLabel="Employee Profile" class="label-wrapper">
+          <select
+            tuiTextfield
+            [(ngModel)]="selectedEmployeeCode"
+            name="employee"
+            class="employee-select"
+          >
+            @for (emp of employees(); track emp.id) {
+              <option [value]="emp.employeeCode">
+                {{ emp.firstName }} {{ emp.lastName }} ({{ emp.employeeCode }})
+              </option>
+            }
+          </select>
+        </label>
+      </div>
+
+      <div class="form-group">
+        <label tuiLabel="6-Digit Verification Code" class="label-wrapper">
+          <input
+            tuiTextfield
+            type="text"
+            inputmode="numeric"
+            pattern="[0-9]*"
+            maxlength="6"
+            placeholder="000000"
+            [(ngModel)]="code"
+            name="code"
+            autocomplete="one-time-code"
+            class="code-input"
+          />
+        </label>
+      </div>
+
+      @if (error()) {
+        <div class="error-message">
+          {{ error() }}
+        </div>
+      }
+
+      <button
+        tuiButton
+        type="submit"
+        [disabled]="loading() || code().length !== 6"
+        class="submit-button"
+      >
+        Sign In
+      </button>
+    </form>
+  </div>
+</div>

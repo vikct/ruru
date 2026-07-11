@@ -312,6 +312,7 @@ public class EmployeeEndpoints : ICarterModule
         app.MapGet("api/invite/{token}", async (
             string token,
             IApplicationDbContext dbContext,
+            ITotpService totpService,
             CancellationToken cancellationToken) =>
         {
             var invite = await dbContext.InviteTokens
@@ -330,11 +331,21 @@ public class EmployeeEndpoints : ICarterModule
                 return Results.NotFound("Associated employee is no longer active.");
             }
 
+            if (string.IsNullOrEmpty(employee.TotpSecret))
+            {
+                employee.TotpSecret = totpService.GenerateSecret();
+                await dbContext.SaveChangesAsync(cancellationToken);
+            }
+
+            var qrUri = totpService.GetQrCodeUri(employee.Email, employee.TotpSecret);
+
             return Results.Ok(new InviteDetailsDto(
                 employee.Id,
                 employee.FirstName,
                 employee.LastName,
-                employee.Email
+                employee.Email,
+                employee.TotpSecret,
+                qrUri
             ));
         }).AllowAnonymous();
 
@@ -360,5 +371,5 @@ public record UpdateEmployeeStatusRequest(bool IsActive);
 public record TotpSetupResponse(string Secret, string QrCodeUri);
 public record VerifyTotpRequest(string Code);
 public record InviteResponse(string InviteLink);
-public record InviteDetailsDto(Guid EmployeeId, string FirstName, string LastName, string Email);
+public record InviteDetailsDto(Guid EmployeeId, string FirstName, string LastName, string Email, string TotpSecret, string QrCodeUri);
 public record RoleDto(int Id, string Name, string Description);

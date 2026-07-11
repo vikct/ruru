@@ -1,0 +1,82 @@
+<div class="setup-container">
+  <div class="setup-card">
+    <div class="setup-header">
+      <h2>Link Authenticator</h2>
+      <p>Set up passwordless 2-Step Verification for your Ruru POS account.</p>
+    </div>
+
+    @if (loading()) {
+      <div class="loading-state">
+        <p>Loading registration details...</p>
+      </div>
+    } @else if (successMsg()) {
+      <div class="success-state">
+        <div class="success-icon">✓</div>
+        <h3>Success!</h3>
+        <p>{{ successMsg() }}</p>
+      </div>
+    } @else {
+      @if (inviteDetails(); as details) {
+        <div class="employee-info">
+          <p>Registering: <strong>{{ details.firstName }} {{ details.lastName }}</strong></p>
+          <p>Email: {{ details.email }}</p>
+        </div>
+
+        <div class="instructions">
+          <ol>
+            <li>Install Google Authenticator, Microsoft Authenticator, or Authy on your mobile device.</li>
+            <li>Scan the QR code below using the authenticator app:</li>
+          </ol>
+        </div>
+
+        @if (qrImageUrl()) {
+          <div class="qr-container">
+            <img [src]="qrImageUrl()" alt="TOTP QR Code" />
+          </div>
+        }
+
+        <div class="manual-secret">
+          <span class="manual-label">Or enter code manually:</span>
+          <code class="secret-text">{{ details.totpSecret }}</code>
+        </div>
+
+        <form (submit)="verifySetup()" class="setup-form">
+          <div class="form-group">
+            <label tuiLabel="Enter Verification Code" class="label-wrapper">
+              <input
+                tuiTextfield
+                type="text"
+                inputmode="numeric"
+                pattern="[0-9]*"
+                maxlength="6"
+                placeholder="000000"
+                [(ngModel)]="code"
+                name="code"
+                class="code-input"
+              />
+            </label>
+          </div>
+
+          @if (error()) {
+            <div class="error-message">
+              {{ error() }}
+            </div>
+          }
+
+          <button
+            tuiButton
+            type="submit"
+            [disabled]="verifying() || code().length !== 6"
+            class="submit-button"
+          >
+            Verify and Complete Setup
+          </button>
+        </form>
+      } @else {
+        <div class="error-state">
+          <p class="error-message">{{ error() }}</p>
+        </div>
+      }
+    }
+  </div>
+</div>
