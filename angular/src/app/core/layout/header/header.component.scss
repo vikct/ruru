@@ -29,3 +29,41 @@
 .layout-topbar-search {
   @apply hidden sm:flex w-[240px] focus-within:w-[280px] transition-all duration-200;
 }
+
+.profile-dropdown {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  background-color: var(--bg-sidebar);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  min-width: 180px;
+}
+
+.user-dropdown-details {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 0.5rem;
+}
+
+.user-dropdown-name {
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: var(--text-primary);
+}
+
+.user-dropdown-role {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.dropdown-divider {
+  border: 0;
+  border-top: 1px solid var(--border);
+  margin: 0.5rem 0;
+}
+
+.sign-out-btn {
+  width: 100%;
+}

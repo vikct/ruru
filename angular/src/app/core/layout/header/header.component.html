@@ -58,14 +58,38 @@
       <tui-icon [icon]="themeService.isDarkMode() ? '@tui.sun' : '@tui.moon'" />
     </button>
 
-    <!-- User profile avatar button -->
+    <!-- User profile avatar button with dropdown -->
     <button
       tuiIconButton
       type="button"
       appearance="flat-grayscale"
       class="p-0 overflow-hidden"
+      [tuiDropdown]="profileMenu"
+      [(tuiDropdownOpen)]="open"
     >
-      <span tuiAvatar="VT" size="s"></span>
+      <span [tuiAvatar]="avatarLabel()" size="s"></span>
     </button>
+
+    <ng-template #profileMenu>
+      <div class="profile-dropdown">
+        @if (currentUser(); as user) {
+          <div class="user-dropdown-details">
+            <span class="user-dropdown-name">{{ user.firstName }} {{ user.lastName }}</span>
+            <span class="user-dropdown-role">{{ userRole() }}</span>
+          </div>
+          <hr class="dropdown-divider" />
+        }
+        <button
+          tuiButton
+          type="button"
+          appearance="flat"
+          size="s"
+          (click)="signOut()"
+          class="sign-out-btn"
+        >
+          Sign Out
+        </button>
+      </div>
+    </ng-template>
   </div>
 </header>
