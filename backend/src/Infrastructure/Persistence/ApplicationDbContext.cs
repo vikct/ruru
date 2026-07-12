@@ -82,9 +82,9 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
                 Id = adminId,
                 StoreId = defaultStoreId,
                 EmployeeCode = "EMP-001",
-                FirstName = "System",
-                LastName = "Admin",
-                Email = "admin@rurupos.com",
+                FirstName = "Victor",
+                LastName = "Tan",
+                Email = "fenrirwolfe@gmail.com",
                 TotpSecret = "NBSWY3DPEB3W64TBNQ", // Base32 for dummy secret "admin12345"
                 IsTotpSetUp = true,
                 IsActive = true,
