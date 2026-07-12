@@ -349,6 +349,25 @@ public class EmployeeEndpoints : ICarterModule
             ));
         }).AllowAnonymous();
 
+        // GET /api/auth/profiles - Allow Anonymous
+        app.MapGet("api/auth/profiles", async (
+            IApplicationDbContext dbContext,
+            CancellationToken cancellationToken) =>
+        {
+            var profiles = await dbContext.Employees
+                .Where(e => e.IsActive)
+                .Select(e => new EmployeeProfileDto(
+                    e.Id,
+                    e.EmployeeCode,
+                    e.FirstName,
+                    e.LastName,
+                    e.IsTotpSetUp
+                ))
+                .ToListAsync(cancellationToken);
+
+            return Results.Ok(profiles);
+        }).AllowAnonymous();
+
         // GET /api/roles - Admin only
         group.MapGet("roles", async (
             IApplicationDbContext dbContext,
@@ -373,3 +392,4 @@ public record VerifyTotpRequest(string Code);
 public record InviteResponse(string InviteLink);
 public record InviteDetailsDto(Guid EmployeeId, string FirstName, string LastName, string Email, string TotpSecret, string QrCodeUri);
 public record RoleDto(int Id, string Name, string Description);
+public record EmployeeProfileDto(Guid Id, string EmployeeCode, string FirstName, string LastName, bool IsTotpSetUp);
