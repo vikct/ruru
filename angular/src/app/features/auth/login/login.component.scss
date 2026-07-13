@@ -49,18 +49,32 @@
   flex-direction: column;
 }
 
-.label-wrapper {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  color: var(--text-muted);
-  font-size: 0.875rem;
-  font-weight: 500;
-}
+:host ::ng-deep {
+  .label-wrapper {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.5rem !important;
+    color: var(--text-muted) !important;
+    font-size: 0.875rem !important;
+    font-weight: 500 !important;
+    align-items: center !important;
+    width: 100% !important;
+  }
 
-.employee-select,
-.code-input {
-  width: 100%;
+  .employee-select,
+  .code-input,
+  select,
+  input {
+    width: 100% !important;
+    text-align: center !important;
+    text-align-last: center !important;
+  }
+
+  .code-input {
+    font-size: 1.5rem !important;
+    letter-spacing: 0.25rem !important;
+    text-indent: 0.25rem !important;
+  }
 }
 
 .error-message {
