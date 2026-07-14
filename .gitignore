@@ -38,3 +38,4 @@ yarn-error.log*
 # Agentic Assistant (Superpowers)
 .superpowers/
 docs/superpowers/
+.worktrees/
