@@ -2,7 +2,7 @@
   <!-- Logo -->
   <a class="layout-topbar-logo" routerLink="/">
     <div class="logo-icon-wrapper">
-      <tui-icon icon="@tui.receipt" class="text-xl" />
+      <tui-icon icon="@tui.receipt" />
     </div>
     <span>Ruru POS</span>
   </a>
@@ -28,7 +28,7 @@
     </tui-textfield>
 
     <!-- Notifications -->
-    <span class="relative inline-flex">
+    <span class="notification-wrapper">
       <button
         tuiIconButton
         type="button"
@@ -40,7 +40,7 @@
         tuiBadge
         size="s"
         appearance="destructive"
-        class="absolute top-1 right-1 pointer-events-none"
+        class="notification-badge"
       >
         3
       </span>
@@ -63,7 +63,7 @@
       tuiIconButton
       type="button"
       appearance="flat-grayscale"
-      class="p-0 overflow-hidden"
+      class="profile-button"
       [tuiDropdown]="profileMenu"
       [(tuiDropdownOpen)]="open"
     >
@@ -73,11 +73,11 @@
     <ng-template #profileMenu>
       <div class="profile-dropdown">
         @if (currentUser(); as user) {
-          <div class="user-dropdown-details">
-            <span class="user-dropdown-name">{{ user.firstName }} {{ user.lastName }}</span>
-            <span class="user-dropdown-role">{{ userRole() }}</span>
+          <div class="profile-user">
+            <span class="profile-name">{{ user.firstName }} {{ user.lastName }}</span>
+            <span class="profile-role">{{ userRole() }}</span>
           </div>
-          <hr class="dropdown-divider" />
+          <hr class="profile-divider" />
         }
         <button
           tuiButton
@@ -85,7 +85,6 @@
           appearance="flat"
           size="s"
           (click)="signOut()"
-          class="sign-out-btn"
         >
           Sign Out
         </button>

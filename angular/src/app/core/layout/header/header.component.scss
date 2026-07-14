@@ -1,69 +1,195 @@
-@reference "tailwindcss";
+// ──────────────────────────────────────────────────────────
+// AppHeaderComponent Styles
+// ──────────────────────────────────────────────────────────
+
+// Theme-aware text color: remap Taiga's muted text tokens to
+// --text-primary for icon buttons, the search textfield, and the
+// avatar inside the topbar. This makes their text (icons, placeholder,
+// avatar letters) render with full-contrast color in both light and
+// dark themes. Does not affect these components elsewhere in the app.
+//
+// Note: tui-textfield is an Angular component (element selector),
+// while tuiIconButton and tuiAvatar are attribute directives, so we
+// need different selector forms for each.
+.layout-topbar,
+.layout-topbar [tuiIconButton],
+.layout-topbar tui-textfield,
+.layout-topbar [tuiAvatar] {
+  color: var(--text-primary);
+  // Match the body transition (250ms ease from _reset.scss) so all
+  // color-bearing elements inside the topbar animate in lockstep with
+  // the rest of the page during theme toggle. Without this, custom
+  // properties like --text-primary flip instantly while the topbar
+  // background fades smoothly, producing a visible "double color" jump.
+  transition: color 250ms ease, background-color 250ms ease, border-color 250ms ease;
+}
+
+.layout-topbar [tuiIconButton],
+.layout-topbar tui-textfield,
+.layout-topbar [tuiAvatar] {
+  --tui-text-secondary: var(--text-primary);
+  --tui-text-tertiary: var(--text-primary);
+}
+
+// Belt-and-braces: force placeholder/label color in case the property
+// inheritance path doesn't reach Taiga's placeholder pseudo-element.
+.layout-topbar tui-textfield [tuiInput]::placeholder,
+.layout-topbar tui-textfield [tuiLabel],
+.layout-topbar [tuiAvatar] {
+  color: var(--text-primary);
+}
 
 .layout-topbar {
-  @apply fixed h-[var(--topbar-height)] z-[997] left-0 top-0 w-full px-8 flex items-center justify-between bg-[var(--bg-topbar)] backdrop-blur-md border-b border-[var(--border)] transition-all duration-250 max-[991px]:px-4;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 997;
+  width: 100%;
+  height: var(--topbar-height);
+  padding: 0 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bg-topbar);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--border);
+  // Match the body transition duration/timing so the header animates
+  // in lockstep with the rest of the page during theme toggle.
+  transition: background-color 250ms ease, border-color 250ms ease, color 250ms ease;
+}
+
+@media (max-width: 991px) {
+  .layout-topbar {
+    padding: 0 1rem;
+  }
 }
 
 .layout-topbar-logo {
-  @apply flex items-center gap-3 no-underline text-[var(--text-primary)] font-bold text-xl tracking-tight;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  letter-spacing: -0.025em;
+  color: var(--text-primary);
+  transition: color 250ms ease;
 
   .logo-icon-wrapper {
-    @apply w-[38px] h-[38px] bg-[var(--bg-item-active)] flex items-center justify-center rounded-[10px] border border-[var(--border)] text-xl transition-colors duration-200 text-[var(--accent)];
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-item-active);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--accent);
+    font-size: 1.25rem;
+    line-height: 1.75rem;
+    transition: background-color 250ms ease, color 250ms ease;
   }
+}
 
-  &:hover {
-    .logo-icon-wrapper {
-      @apply bg-[var(--accent-glow)];
-    }
-  }
+.layout-topbar-logo:hover .logo-icon-wrapper {
+  background: var(--accent-glow);
 }
 
 .layout-menu-button {
-  @apply ml-8 mr-auto max-[991px]:ml-4;
+  margin-left: 2rem;
+  margin-right: auto;
+}
+
+@media (max-width: 991px) {
+  .layout-menu-button {
+    margin-left: 1rem;
+  }
 }
 
 .layout-topbar-menu {
-  @apply flex items-center gap-3 max-[991px]:gap-2;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+@media (max-width: 991px) {
+  .layout-topbar-menu {
+    gap: 0.5rem;
+  }
 }
 
 .layout-topbar-search {
-  @apply hidden sm:flex w-[240px] focus-within:w-[280px] transition-all duration-200;
+  display: none;
+  width: 240px;
+  transition: width 250ms ease;
+}
+
+.layout-topbar-search:focus-within {
+  width: 280px;
+}
+
+@media (min-width: 640px) {
+  .layout-topbar-search {
+    display: flex;
+  }
+}
+
+// Notification bell wrapper: relative + inline-flex so the badge can be
+// absolutely positioned in the top-right of the bell button.
+.notification-wrapper {
+  position: relative;
+  display: inline-flex;
+}
+
+.notification-badge {
+  position: absolute;
+  top: 0.25rem;
+  right: 0.25rem;
+  pointer-events: none;
+}
+
+// Avatar button: strip default button padding so the circular avatar
+// fills the button cleanly.
+.profile-button {
+  padding: 0;
+  overflow: hidden;
 }
 
 .profile-dropdown {
+  min-width: 180px;
+  padding: 1rem;
   display: flex;
   flex-direction: column;
-  padding: 1rem;
-  background-color: var(--bg-sidebar);
+  background: var(--bg-sidebar);
   border: 1px solid var(--border);
   border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  min-width: 180px;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 0.1);
 }
 
-.user-dropdown-details {
+.profile-dropdown .profile-user {
   display: flex;
   flex-direction: column;
   margin-bottom: 0.5rem;
 }
 
-.user-dropdown-name {
+.profile-dropdown .profile-name {
   font-weight: 600;
   font-size: 0.875rem;
   color: var(--text-primary);
 }
 
-.user-dropdown-role {
+.profile-dropdown .profile-role {
   font-size: 0.75rem;
   color: var(--text-muted);
 }
 
-.dropdown-divider {
+.profile-dropdown .profile-divider {
   border: 0;
   border-top: 1px solid var(--border);
   margin: 0.5rem 0;
 }
 
-.sign-out-btn {
+.profile-dropdown button {
   width: 100%;
 }
