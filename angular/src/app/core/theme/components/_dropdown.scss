@@ -1,0 +1,96 @@
+// ──────────────────────────────────────────────────────────
+// Dropdown Component Glass Styles
+// ──────────────────────────────────────────────────────────
+
+// Apply iOS Liquid Glass styles to Taiga UI's outer dropdown popover containers
+// to ensure perfect rounded corners, shadows, and transparency without clipping.
+tui-dropdown,
+.tui-dropdown,
+.tui-dropdown-box,
+[tuiDropdownContainer] {
+  background: var(--glass-bg) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  
+  // Border and corners
+  border: 1px solid var(--glass-border) !important;
+  border-radius: 16px !important;
+  overflow: hidden !important; // Clips all inner content to the 16px rounded border
+  
+  // Glass rim inset highlight + elevated shadow for depth
+  box-shadow: 
+    inset 1px 1px 0 var(--glass-border),
+    0 10px 30px -5px rgba(0, 0, 0, 0.15),
+    0 8px 16px -6px rgba(0, 0, 0, 0.15) !important;
+
+  padding: 0 !important;
+  margin: 0 !important;
+  transition: 
+    background-color 250ms ease,
+    border-color 250ms ease,
+    box-shadow 250ms ease !important;
+}
+
+// Inner template layout for the profile dropdown
+.profile-dropdown {
+  min-width: 200px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  
+  // Reset container properties since they are now handled by the tui-dropdown host
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+
+  // Inner elements styles
+  .profile-user {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 0.75rem;
+  }
+
+  .profile-name {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--text-primary);
+  }
+
+  .profile-role {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-top: 0.15rem;
+  }
+
+  .profile-divider {
+    border: 0;
+    border-top: 1px solid var(--glass-border);
+    margin: 0.75rem 0;
+  }
+
+  // Sign out button
+  button[tuiButton] {
+    width: 100%;
+    border-radius: 10px !important;
+    font-weight: 500;
+    font-size: 0.85rem;
+    height: 2.25rem;
+    transition: all 200ms ease;
+    background: var(--glass-tint) !important;
+    border: 1px solid var(--glass-border) !important;
+    color: var(--text-primary) !important;
+    
+    &:hover {
+      background: var(--glass-tint-hover) !important;
+      transform: translateY(-1px);
+    }
+
+    &:active {
+      background: var(--glass-tint-active) !important;
+      transform: translateY(0);
+    }
+  }
+}

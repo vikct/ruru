@@ -23,7 +23,7 @@
   --accent-light: #4f46e5;
   --accent-glow: rgba(99, 102, 241, 0.15);
 
-  --border: rgba(15, 23, 42, 0.20);
+  --border: rgba(15, 23, 42, 0.2);
   --text-primary: #0f172a;
   --text-muted: #475569;
   --text-dim: #cbd5e1;
@@ -32,7 +32,7 @@
 
   // Sakai compat variables
   --surface-card: #ffffff;
-  --surface-border: rgba(15, 23, 42, 0.20);
+  --surface-border: rgba(15, 23, 42, 0.2);
 
   // 📐 Layout structural tokens
   --sidebar-width: 280px;
@@ -40,6 +40,14 @@
   --topbar-height: 70px;
   --transition-duration: 0.2s;
   --transition-timing: cubic-bezier(0.05, 0.74, 0.2, 0.99);
+
+  // 🧪 Glass design tokens (Light Mode)
+  --glass-bg: rgba(255, 255, 255, 0.75);
+  --glass-tint: rgba(99, 102, 241, 0.08);
+  --glass-tint-hover: rgba(99, 102, 241, 0.15);
+  --glass-tint-active: rgba(99, 102, 241, 0.22);
+  --glass-border: rgba(99, 102, 241, 0.2);
+  --glass-blur: 12px;
 }
 
 .ruru-dark {
@@ -64,4 +72,11 @@
   // Sakai compat variables
   --surface-card: #0d1526;
   --surface-border: rgba(255, 255, 255, 0.12);
+
+  // 🧪 Glass design tokens (Dark Mode)
+  --glass-bg: rgba(13, 21, 38, 0.55);
+  --glass-tint: rgba(99, 102, 241, 0.12);
+  --glass-tint-hover: rgba(99, 102, 241, 0.22);
+  --glass-tint-active: rgba(99, 102, 241, 0.32);
+  --glass-border: rgba(255, 255, 255, 0.18);
 }

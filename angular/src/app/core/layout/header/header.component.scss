@@ -2,41 +2,16 @@
 // AppHeaderComponent Styles
 // ──────────────────────────────────────────────────────────
 
-// Theme-aware text color: remap Taiga's muted text tokens to
-// --text-primary for icon buttons, the search textfield, and the
-// avatar inside the topbar. This makes their text (icons, placeholder,
-// avatar letters) render with full-contrast color in both light and
-// dark themes. Does not affect these components elsewhere in the app.
-//
-// Note: tui-textfield is an Angular component (element selector),
-// while tuiIconButton and tuiAvatar are attribute directives, so we
-// need different selector forms for each.
-.layout-topbar,
-.layout-topbar [tuiIconButton],
-.layout-topbar tui-textfield,
-.layout-topbar [tuiAvatar] {
+.layout-topbar {
   color: var(--text-primary);
-  // Match the body transition (250ms ease from _reset.scss) so all
-  // color-bearing elements inside the topbar animate in lockstep with
-  // the rest of the page during theme toggle. Without this, custom
-  // properties like --text-primary flip instantly while the topbar
-  // background fades smoothly, producing a visible "double color" jump.
   transition: color 250ms ease, background-color 250ms ease, border-color 250ms ease;
 }
 
-.layout-topbar [tuiIconButton],
-.layout-topbar tui-textfield,
+// Keep avatar selector for full contrast letters and transparent background
 .layout-topbar [tuiAvatar] {
-  --tui-text-secondary: var(--text-primary);
-  --tui-text-tertiary: var(--text-primary);
-}
-
-// Belt-and-braces: force placeholder/label color in case the property
-// inheritance path doesn't reach Taiga's placeholder pseudo-element.
-.layout-topbar tui-textfield [tuiInput]::placeholder,
-.layout-topbar tui-textfield [tuiLabel],
-.layout-topbar [tuiAvatar] {
-  color: var(--text-primary);
+  color: var(--text-primary) !important;
+  background: transparent !important;
+  --tui-text-primary: var(--text-primary);
 }
 
 .layout-topbar {
@@ -149,47 +124,7 @@
   pointer-events: none;
 }
 
-// Avatar button: strip default button padding so the circular avatar
-// fills the button cleanly.
 .profile-button {
   padding: 0;
   overflow: hidden;
-}
-
-.profile-dropdown {
-  min-width: 180px;
-  padding: 1rem;
-  display: flex;
-  flex-direction: column;
-  background: var(--bg-sidebar);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgb(0 0 0 / 0.1);
-}
-
-.profile-dropdown .profile-user {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 0.5rem;
-}
-
-.profile-dropdown .profile-name {
-  font-weight: 600;
-  font-size: 0.875rem;
-  color: var(--text-primary);
-}
-
-.profile-dropdown .profile-role {
-  font-size: 0.75rem;
-  color: var(--text-muted);
-}
-
-.profile-dropdown .profile-divider {
-  border: 0;
-  border-top: 1px solid var(--border);
-  margin: 0.5rem 0;
-}
-
-.profile-dropdown button {
-  width: 100%;
 }

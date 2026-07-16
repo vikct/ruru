@@ -1,0 +1,41 @@
+// ──────────────────────────────────────────────────────────
+// Icon Button Component Glass Styles
+// ──────────────────────────────────────────────────────────
+
+[tuiIconButton] {
+  // Override default shape to pill
+  border-radius: 9999px !important;
+  overflow: hidden;
+
+  // iOS liquid glass resting state
+  background: var(--glass-tint) !important;
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  
+  // 1px inset glass rim highlight
+  box-shadow: inset 1px 1px 0 var(--glass-border) !important;
+  border: none !important;
+
+  // Make text/icon color match the primary theme text
+  color: var(--text-primary) !important;
+  --tui-text-primary: var(--text-primary);
+  --tui-text-secondary: var(--text-primary);
+  --tui-text-tertiary: var(--text-primary);
+
+  // Transition for smooth hover and active state flipping
+  transition: 
+    background-color 250ms ease,
+    box-shadow 250ms ease,
+    color 250ms ease,
+    transform 200ms ease-out !important;
+
+  &:hover {
+    background: var(--glass-tint-hover) !important;
+    transform: scale(1.03);
+  }
+
+  &:active {
+    background: var(--glass-tint-active) !important;
+    transform: scale(0.97);
+  }
+}
