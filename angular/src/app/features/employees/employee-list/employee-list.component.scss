@@ -25,45 +25,6 @@
   }
 }
 
-.invite-box {
-  background-color: rgba(99, 102, 241, 0.1);
-  border: 1px solid rgba(99, 102, 241, 0.2);
-  padding: 1.25rem;
-  border-radius: 12px;
-  margin-bottom: 1.5rem;
-  color: var(--text-primary);
-  font-size: 0.875rem;
-
-  .invite-title {
-    font-weight: bold;
-    color: var(--accent);
-    margin-bottom: 0.5rem;
-  }
-
-  p {
-    margin: 0 0 0.75rem 0;
-    color: var(--text-muted);
-  }
-
-  .invite-link-row {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    flex-wrap: wrap;
-
-    .invite-url {
-      font-family: monospace;
-      background-color: var(--bg-base);
-      padding: 0.5rem 1rem;
-      border-radius: 6px;
-      border: 1px solid var(--border);
-      font-weight: 600;
-      color: var(--text-primary);
-      word-break: break-all;
-    }
-  }
-}
-
 .table-container {
   background-color: var(--bg-sidebar);
   border: 1px solid var(--border);

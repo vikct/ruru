@@ -1,8 +1,11 @@
 import { Component, OnInit, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterLink } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { TuiButton } from '@taiga-ui/core';
+import { MessageService } from 'primeng/api';
+import { Dialog, DialogRef } from '@angular/cdk/dialog';
+import { EmployeeAddDialogComponent, EmployeeFormResult } from '../employee-add-dialog/employee-add-dialog.component';
 
 export interface EmployeeListDto {
   id: string;
@@ -28,13 +31,12 @@ export interface EmployeeListDto {
 })
 export class EmployeeListComponent implements OnInit {
   private readonly http = inject(HttpClient);
-  private readonly router = inject(Router);
+  private readonly dialog = inject(Dialog);
+  private readonly messages = inject(MessageService);
 
   readonly employees = signal<EmployeeListDto[]>([]);
   readonly loading = signal<boolean>(false);
   readonly error = signal<string>('');
-  readonly inviteLink = signal<string>('');
-  readonly inviteEmployeeName = signal<string>('');
 
   ngOnInit() {
     this.loadEmployees();
@@ -48,23 +50,36 @@ export class EmployeeListComponent implements OnInit {
         this.employees.set(data);
         this.loading.set(false);
       },
-      error: (err) => {
+      error: () => {
         this.error.set('Failed to load employees. Make sure you are logged in as an Admin.');
         this.loading.set(false);
+        this.messages.add({
+          severity: 'error',
+          summary: 'Load failed',
+          detail: 'Could not load employees. Please verify your admin permissions.',
+          life: 5000
+        });
       }
     });
   }
 
   sendInvite(employee: EmployeeListDto) {
-    this.inviteLink.set('');
-    this.inviteEmployeeName.set('');
     this.http.post<{ inviteLink: string }>(`http://localhost:5031/api/employees/${employee.id}/invite`, {}).subscribe({
       next: (res) => {
-        this.inviteEmployeeName.set(`${employee.firstName} ${employee.lastName}`);
-        this.inviteLink.set(res.inviteLink);
+        this.messages.add({
+          severity: 'info',
+          summary: 'Invite link generated',
+          detail: `Share with ${employee.firstName} ${employee.lastName}: ${res.inviteLink}`,
+          life: 8000
+        });
       },
-      error: (err) => {
-        alert('Failed to generate invite link.');
+      error: () => {
+        this.messages.add({
+          severity: 'error',
+          summary: 'Invite failed',
+          detail: 'Failed to generate invite link. Please try again.',
+          life: 5000
+        });
       }
     });
   }
@@ -75,12 +90,53 @@ export class EmployeeListComponent implements OnInit {
       isActive: newStatus
     }).subscribe({
       next: () => {
-        this.employees.update(list => 
+        this.employees.update(list =>
           list.map(e => e.id === employee.id ? { ...e, isActive: newStatus } : e)
         );
+        this.messages.add({
+          severity: newStatus ? 'success' : 'warn',
+          summary: newStatus ? 'Employee activated' : 'Employee deactivated',
+          detail: `${employee.firstName} ${employee.lastName} is now ${newStatus ? 'active' : 'inactive'}.`,
+          life: 3500
+        });
       },
-      error: (err) => {
-        alert('Failed to update employee status.');
+      error: () => {
+        this.messages.add({
+          severity: 'error',
+          summary: 'Update failed',
+          detail: 'Failed to update employee status. Please try again.',
+          life: 5000
+        });
+      }
+    });
+  }
+
+  openAddDialog() {
+    const ref = this.dialog.open<EmployeeFormResult>(EmployeeAddDialogComponent, {
+      width: '580px',
+      maxWidth: '95vw',
+      disableClose: false
+    }) as DialogRef<EmployeeFormResult>;
+
+    ref.closed.subscribe((result: EmployeeFormResult | undefined) => {
+      if (result) {
+        const newEmployee: EmployeeListDto = {
+          id: result.id,
+          employeeCode: result.employeeCode,
+          firstName: result.firstName,
+          lastName: result.lastName,
+          email: result.email,
+          phone: result.phone,
+          isActive: result.isActive,
+          isTotpSetUp: result.isTotpSetUp
+        };
+        this.employees.update(list => [newEmployee, ...list]);
+        this.messages.add({
+          severity: 'success',
+          summary: 'Employee created',
+          detail: `${result.firstName} ${result.lastName} (${result.employeeCode}) added successfully.`,
+          life: 4000
+        });
       }
     });
   }

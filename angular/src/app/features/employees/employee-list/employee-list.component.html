@@ -4,21 +4,10 @@
       <h1>Employee Management</h1>
       <p class="subtitle">View and manage store employees, roles, and invite tokens.</p>
     </div>
-    <button tuiButton [routerLink]="['/employees/new']" size="m">
+    <button tuiButton size="m" (click)="openAddDialog()">
       Add Employee
     </button>
   </div>
-
-  @if (inviteLink()) {
-    <div class="invite-box">
-      <div class="invite-title">Invite Link Generated for {{ inviteEmployeeName() }}</div>
-      <p>Share this link with the employee to link their Authenticator app:</p>
-      <div class="invite-link-row">
-        <code class="invite-url">{{ inviteLink() }}</code>
-        <button tuiButton size="xs" (click)="inviteLink.set('')">Dismiss</button>
-      </div>
-    </div>
-  }
 
   @if (loading()) {
     <div class="loading-state">
