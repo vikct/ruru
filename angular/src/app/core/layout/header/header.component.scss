@@ -29,8 +29,8 @@
   align-items: center;
   justify-content: space-between;
   background: var(--bg-topbar);
-  backdrop-filter: blur(8px);
-  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(2px);
+  border-bottom: none;
   // Match the body transition duration/timing so the header animates
   // in lockstep with the rest of the page during theme toggle.
   transition:
