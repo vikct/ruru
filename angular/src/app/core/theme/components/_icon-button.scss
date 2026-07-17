@@ -41,6 +41,15 @@
     transform: scale(0.97);
   }
 
+  // Disable scale transformation on dropdown triggers to prevent position recalculation jitters
+  &[tuiDropdown],
+  &.profile-button {
+    &:hover,
+    &:active {
+      transform: none !important;
+    }
+  }
+
   // 🧪 Option 1: Elevated (Subtle outer drop shadow + outer border instead of indigo glow)
   &.glass-btn-1 {
     background: var(--glass-tint) !important;
