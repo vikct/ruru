@@ -37,7 +37,7 @@
     top: 0;
     left: 0;
     right: 0;
-    bottom: 0;
+    bottom: -20px; // 🛠️ TWEAK THIS: Controls how far below the header the blur extends (e.g., -20px = 20px extension)
     z-index: -1;
     pointer-events: none;
 
@@ -50,12 +50,18 @@
     // -webkit-mask-image: linear-gradient(to top, transparent 0%, black 90%);
 
     // Gradient mask: bottom to top
-    mask-image: linear-gradient(
-      to top,
-      rgba(0, 0, 0, 0) 0%,
-      rgba(0, 0, 0, 1) 25%
-    ); // <-- [2] Gradient Distribution
-    -webkit-mask-image: linear-gradient(to top, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 1) 25%);
+    // mask-image: linear-gradient(
+    //   to top,
+    //   rgba(0, 0, 0, 0) 0%,
+    //   rgba(0, 0, 0, 1) 25%
+    // ); // <-- [2] Gradient Distribution
+    // -webkit-mask-image: linear-gradient(to top, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 1) 25%);
+
+    // 🛠️ TWEAK THIS: linear-gradient goes "to bottom".
+    // It remains fully blurred (black) up to var(--topbar-height),
+    // then fades to transparent at 100% (the bottom of the extended zone).
+    mask-image: linear-gradient(to bottom, black var(--topbar-height), transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, black var(--topbar-height), transparent 100%);
 
     transition: background-color 250ms ease;
   }
