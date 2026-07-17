@@ -1,10 +1,10 @@
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
-import { authGuard } from './auth.guard';
+import { authGuard, guestGuard } from './auth.guard';
 import { AuthService } from '../services/auth.service';
-import { vi } from 'vitest';
+import { vi, describe, beforeEach, it, expect } from 'vitest';
 
-describe('authGuard', () => {
+describe('Auth Guards', () => {
   let authServiceMock: any;
   let routerMock: any;
 
@@ -14,7 +14,7 @@ describe('authGuard', () => {
     };
     
     routerMock = {
-      navigate: vi.fn()
+      createUrlTree: vi.fn().mockImplementation((commands) => ({ commands }))
     };
 
     TestBed.configureTestingModule({
@@ -25,25 +25,33 @@ describe('authGuard', () => {
     });
   });
 
-  it('should return true if user is logged in', () => {
-    authServiceMock.currentUser.mockReturnValue({
-      id: 'emp-123',
-      firstName: 'Victor',
-      lastName: 'Tan',
-      employeeCode: 'EMP-001',
-      isActive: true
+  describe('authGuard', () => {
+    it('should return true if user is logged in', () => {
+      authServiceMock.currentUser.mockReturnValue({ id: 'emp-123' });
+      const result = TestBed.runInInjectionContext(() => authGuard({} as any, {} as any));
+      expect(result).toBe(true);
     });
 
-    const result = TestBed.runInInjectionContext(() => authGuard({} as any, {} as any));
-    expect(result).toBe(true);
-    expect(routerMock.navigate).not.toHaveBeenCalled();
+    it('should return UrlTree to login page if user is not logged in', () => {
+      authServiceMock.currentUser.mockReturnValue(null);
+      const result = TestBed.runInInjectionContext(() => authGuard({} as any, {} as any));
+      expect(result).toEqual({ commands: ['/auth/login'] });
+      expect(routerMock.createUrlTree).toHaveBeenCalledWith(['/auth/login']);
+    });
   });
 
-  it('should redirect to login and return false if user is not logged in', () => {
-    authServiceMock.currentUser.mockReturnValue(null);
+  describe('guestGuard', () => {
+    it('should return true if user is not logged in', () => {
+      authServiceMock.currentUser.mockReturnValue(null);
+      const result = TestBed.runInInjectionContext(() => guestGuard({} as any, {} as any));
+      expect(result).toBe(true);
+    });
 
-    const result = TestBed.runInInjectionContext(() => authGuard({} as any, {} as any));
-    expect(result).toBe(false);
-    expect(routerMock.navigate).toHaveBeenCalledWith(['/auth/login']);
+    it('should return UrlTree to home page if user is logged in', () => {
+      authServiceMock.currentUser.mockReturnValue({ id: 'emp-123' });
+      const result = TestBed.runInInjectionContext(() => guestGuard({} as any, {} as any));
+      expect(result).toEqual({ commands: ['/'] });
+      expect(routerMock.createUrlTree).toHaveBeenCalledWith(['/']);
+    });
   });
 });
