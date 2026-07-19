@@ -132,13 +132,9 @@ export class AuthService {
   logout(): void {
     const token = this.refreshToken();
     if (token && this.isOnline()) {
-      this.http.post(`${this.apiUrl}/logout`, { refreshToken: token }).subscribe({
-        next: () => this.clearSession(),
-        error: () => this.clearSession()
-      });
-    } else {
-      this.clearSession();
+      this.http.post(`${this.apiUrl}/logout`, { refreshToken: token }).subscribe();
     }
+    this.clearSession();
   }
 
   private saveSession(access: string, refresh: string, employee: LocalEmployee, roles: string[]): void {

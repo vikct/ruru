@@ -55,3 +55,41 @@ tui-textfield {
     color: var(--text-primary) !important;
   }
 }
+
+input[tuiTextfield],
+select[tuiTextfield],
+textarea[tuiTextfield] {
+  // Shape: pill (9999px) for inputs/selects, rounded (12px) for textareas
+  border-radius: 9999px !important;
+  background: var(--glass-tint) !important;
+  backdrop-filter: blur(var(--glass-blur)) !important;
+  -webkit-backdrop-filter: blur(var(--glass-blur)) !important;
+  box-shadow: inset 1px 1px 0 var(--glass-border) !important;
+  border: none !important;
+  color: var(--text-primary) !important;
+  padding: 0.5rem 1rem !important;
+  transition: 
+    background-color 250ms ease,
+    box-shadow 250ms ease,
+    color 250ms ease,
+    border-color 250ms ease !important;
+  outline: none !important;
+  box-sizing: border-box;
+
+  &::placeholder {
+    color: var(--text-primary) !important;
+    opacity: 0.6 !important;
+  }
+
+  &:focus {
+    background: var(--glass-tint-hover) !important;
+    box-shadow: 
+      inset 1px 1px 0 var(--glass-border),
+      0 0 0 2px var(--accent-glow) !important;
+  }
+}
+
+textarea[tuiTextfield] {
+  border-radius: 12px !important;
+  resize: vertical;
+}

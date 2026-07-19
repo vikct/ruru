@@ -1,0 +1,26 @@
+// ──────────────────────────────────────────────────────────
+// Dialog Glass Styles
+// ──────────────────────────────────────────────────────────
+
+// CDK Dialog host (employee-form, and any future CDK dialogs)
+.cdk-overlay-pane {
+  background: transparent !important;
+  box-shadow: none !important;
+
+  > * {
+    background: var(--glass-bg) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    border: 1px solid var(--glass-border) !important;
+    border-radius: 16px !important;
+    box-shadow:
+      inset 1px 1px 0 var(--glass-border),
+      0 20px 40px -10px rgba(0, 0, 0, 0.25) !important;
+    color: var(--text-primary) !important;
+    overflow: hidden;
+    display: block;
+    box-sizing: border-box;
+  }
+}
+
+

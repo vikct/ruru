@@ -1,13 +1,12 @@
 import { Component, signal, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ToastModule } from 'primeng/toast';
 import { AppSidebarComponent } from './sidebar/sidebar.component';
 import { AppHeaderComponent } from './header/header.component';
 
 @Component({
   selector: 'app-layout',
   standalone: true,
-  imports: [CommonModule, ToastModule, AppSidebarComponent, AppHeaderComponent],
+  imports: [CommonModule, AppSidebarComponent, AppHeaderComponent],
   templateUrl: './layout.component.html',
   styleUrl: './layout.component.scss'
 })

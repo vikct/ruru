@@ -1,28 +1,10 @@
 import { Component, OnInit, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import { TuiButton, TuiTextfield, TuiLabel } from '@taiga-ui/core';
-
-export interface RoleDto {
-  id: number;
-  name: string;
-  description: string;
-}
-
-export interface EmployeeDetailsDto {
-  id: string;
-  storeId: string;
-  employeeCode: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone?: string;
-  isActive: boolean;
-  isTotpSetUp: boolean;
-  roles: string[];
-}
+import { TuiButton, TuiTextfield, TuiLabel, TuiLoader, TuiNotificationService } from '@taiga-ui/core';
+import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
+import { RoleDto, EmployeeFormResult, EmployeeDetailsDto } from '../shared/employee.models';
 
 @Component({
   selector: 'app-employee-form',
@@ -30,44 +12,43 @@ export interface EmployeeDetailsDto {
   imports: [
     CommonModule,
     FormsModule,
-    RouterLink,
     TuiButton,
     TuiTextfield,
-    TuiLabel
+    TuiLabel,
+    TuiLoader
   ],
   templateUrl: './employee-form.component.html',
   styleUrl: './employee-form.component.scss'
 })
 export class EmployeeFormComponent implements OnInit {
   private readonly http = inject(HttpClient);
-  private readonly router = inject(Router);
-  private readonly route = inject(ActivatedRoute);
+  private readonly dialogRef = inject(DialogRef<EmployeeFormResult>);
+  private readonly data = inject<{ employeeId?: string }>(DIALOG_DATA, { optional: true });
+  private readonly alerts = inject(TuiNotificationService);
 
   readonly roles = signal<RoleDto[]>([]);
   readonly selectedRoleIds = signal<number[]>([]);
-  
+
   readonly employeeCode = signal<string>('');
   readonly firstName = signal<string>('');
   readonly lastName = signal<string>('');
   readonly email = signal<string>('');
   readonly phone = signal<string>('');
-  
+
   readonly isEditMode = signal<boolean>(false);
   readonly loading = signal<boolean>(false);
   readonly saving = signal<boolean>(false);
   readonly error = signal<string>('');
 
-  private employeeId: string | null = null;
-
   ngOnInit() {
-    this.employeeId = this.route.snapshot.paramMap.get('id');
-    if (this.employeeId && this.employeeId !== 'new') {
+    const empId = this.data?.employeeId;
+    if (empId) {
       this.isEditMode.set(true);
     }
-    
+
     this.loadRoles().then(() => {
-      if (this.isEditMode()) {
-        this.loadEmployeeDetails();
+      if (this.isEditMode() && empId) {
+        this.loadEmployeeDetails(empId);
       }
     });
   }
@@ -81,7 +62,7 @@ export class EmployeeFormComponent implements OnInit {
           this.loading.set(false);
           resolve();
         },
-        error: (err) => {
+        error: () => {
           this.error.set('Failed to load store roles.');
           this.loading.set(false);
           resolve();
@@ -90,16 +71,16 @@ export class EmployeeFormComponent implements OnInit {
     });
   }
 
-  loadEmployeeDetails() {
+  loadEmployeeDetails(employeeId: string) {
     this.loading.set(true);
-    this.http.get<EmployeeDetailsDto>(`http://localhost:5031/api/employees/${this.employeeId}`).subscribe({
+    this.http.get<EmployeeDetailsDto>(`http://localhost:5031/api/employees/${employeeId}`).subscribe({
       next: (data) => {
         this.employeeCode.set(data.employeeCode);
         this.firstName.set(data.firstName);
         this.lastName.set(data.lastName);
         this.email.set(data.email);
         this.phone.set(data.phone || '');
-        
+
         // Match string roles with role IDs
         const matchedIds: number[] = [];
         this.roles().forEach(r => {
@@ -110,7 +91,7 @@ export class EmployeeFormComponent implements OnInit {
         this.selectedRoleIds.set(matchedIds);
         this.loading.set(false);
       },
-      error: (err) => {
+      error: () => {
         this.error.set('Failed to load employee details.');
         this.loading.set(false);
       }
@@ -130,7 +111,6 @@ export class EmployeeFormComponent implements OnInit {
       this.error.set('Please fill out all required fields.');
       return;
     }
-
     if (this.selectedRoleIds().length === 0) {
       this.error.set('Please select at least one role.');
       return;
@@ -140,7 +120,7 @@ export class EmployeeFormComponent implements OnInit {
     this.error.set('');
 
     const payload = {
-      storeId: '00000000-0000-0000-0000-000000000001', // Default Store ID
+      storeId: '00000000-0000-0000-0000-000000000001',
       employeeCode: this.employeeCode(),
       firstName: this.firstName(),
       lastName: this.lastName(),
@@ -150,27 +130,42 @@ export class EmployeeFormComponent implements OnInit {
     };
 
     if (this.isEditMode()) {
-      this.http.put(`http://localhost:5031/api/employees/${this.employeeId}`, payload).subscribe({
-        next: () => {
+      const empId = this.data?.employeeId;
+      this.http.put<EmployeeFormResult>(`http://localhost:5031/api/employees/${empId}`, payload).subscribe({
+        next: (result) => {
           this.saving.set(false);
-          this.router.navigate(['/employees']);
+          this.alerts.open(`${result.firstName} ${result.lastName} updated successfully.`, {
+            label: 'Profile Updated',
+            appearance: 'success'
+          }).subscribe();
+          this.dialogRef.close(result);
         },
         error: (err) => {
-          this.error.set(err.error || 'Failed to update employee details.');
+          const message = err.error?.message || err.error || 'Failed to update employee details.';
+          this.error.set(typeof message === 'string' ? message : 'Failed to update employee details.');
           this.saving.set(false);
         }
       });
     } else {
-      this.http.post('http://localhost:5031/api/employees', payload).subscribe({
-        next: () => {
+      this.http.post<EmployeeFormResult>('http://localhost:5031/api/employees', payload).subscribe({
+        next: (result) => {
           this.saving.set(false);
-          this.router.navigate(['/employees']);
+          this.alerts.open(`${result.firstName} ${result.lastName} created successfully.`, {
+            label: 'Profile Created',
+            appearance: 'success'
+          }).subscribe();
+          this.dialogRef.close(result);
         },
         error: (err) => {
-          this.error.set(err.error || 'Failed to create employee profile.');
+          const message = err.error?.message || err.error || 'Failed to create employee profile.';
+          this.error.set(typeof message === 'string' ? message : 'Failed to create employee profile.');
           this.saving.set(false);
         }
       });
     }
+  }
+
+  onCancel() {
+    this.dialogRef.close(undefined);
   }
 }

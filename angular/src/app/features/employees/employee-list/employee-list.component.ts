@@ -1,30 +1,19 @@
-import { Component, OnInit, signal, inject } from '@angular/core';
+import { Component, OnInit, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import { TuiButton } from '@taiga-ui/core';
-import { MessageService } from 'primeng/api';
+import { TuiButton, TuiIcon, TuiNotificationService, TuiHint } from '@taiga-ui/core';
 import { Dialog, DialogRef } from '@angular/cdk/dialog';
-import { EmployeeAddDialogComponent, EmployeeFormResult } from '../employee-add-dialog/employee-add-dialog.component';
-
-export interface EmployeeListDto {
-  id: string;
-  employeeCode: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone?: string;
-  isActive: boolean;
-  isTotpSetUp: boolean;
-}
+import { EmployeeFormComponent } from '../employee-form/employee-form.component';
+import { EmployeeListDto, EmployeeFormResult } from '../shared/employee.models';
 
 @Component({
   selector: 'app-employee-list',
   standalone: true,
   imports: [
     CommonModule,
-    RouterLink,
-    TuiButton
+    TuiButton,
+    TuiIcon,
+    TuiHint
   ],
   templateUrl: './employee-list.component.html',
   styleUrl: './employee-list.component.scss'
@@ -32,11 +21,41 @@ export interface EmployeeListDto {
 export class EmployeeListComponent implements OnInit {
   private readonly http = inject(HttpClient);
   private readonly dialog = inject(Dialog);
-  private readonly messages = inject(MessageService);
+  private readonly alerts = inject(TuiNotificationService);
+
+  readonly Math = Math;
 
   readonly employees = signal<EmployeeListDto[]>([]);
   readonly loading = signal<boolean>(false);
   readonly error = signal<string>('');
+
+  readonly page = signal<number>(1);
+  readonly pageSize = signal<number>(5);
+
+  readonly paginatedEmployees = computed(() => {
+    const list = this.employees();
+    const startIndex = (this.page() - 1) * this.pageSize();
+    return list.slice(startIndex, startIndex + this.pageSize());
+  });
+
+  readonly totalPages = computed(() => {
+    return Math.max(1, Math.ceil(this.employees().length / this.pageSize()));
+  });
+
+  readonly pagesArray = computed(() => {
+    const total = this.totalPages();
+    const arr = [];
+    for (let i = 1; i <= total; i++) {
+      arr.push(i);
+    }
+    return arr;
+  });
+
+  setPage(p: number) {
+    if (p >= 1 && p <= this.totalPages()) {
+      this.page.set(p);
+    }
+  }
 
   ngOnInit() {
     this.loadEmployees();
@@ -53,12 +72,10 @@ export class EmployeeListComponent implements OnInit {
       error: () => {
         this.error.set('Failed to load employees. Make sure you are logged in as an Admin.');
         this.loading.set(false);
-        this.messages.add({
-          severity: 'error',
-          summary: 'Load failed',
-          detail: 'Could not load employees. Please verify your admin permissions.',
-          life: 5000
-        });
+        this.alerts.open('Could not load employees. Please verify your admin permissions.', {
+          label: 'Load failed',
+          appearance: 'error'
+        }).subscribe();
       }
     });
   }
@@ -66,20 +83,16 @@ export class EmployeeListComponent implements OnInit {
   sendInvite(employee: EmployeeListDto) {
     this.http.post<{ inviteLink: string }>(`http://localhost:5031/api/employees/${employee.id}/invite`, {}).subscribe({
       next: (res) => {
-        this.messages.add({
-          severity: 'info',
-          summary: 'Invite link generated',
-          detail: `Share with ${employee.firstName} ${employee.lastName}: ${res.inviteLink}`,
-          life: 8000
-        });
+        this.alerts.open(`Share with ${employee.firstName} ${employee.lastName}: ${res.inviteLink}`, {
+          label: 'Invite link generated',
+          appearance: 'info'
+        }).subscribe();
       },
       error: () => {
-        this.messages.add({
-          severity: 'error',
-          summary: 'Invite failed',
-          detail: 'Failed to generate invite link. Please try again.',
-          life: 5000
-        });
+        this.alerts.open('Failed to generate invite link. Please try again.', {
+          label: 'Invite failed',
+          appearance: 'error'
+        }).subscribe();
       }
     });
   }
@@ -93,26 +106,22 @@ export class EmployeeListComponent implements OnInit {
         this.employees.update(list =>
           list.map(e => e.id === employee.id ? { ...e, isActive: newStatus } : e)
         );
-        this.messages.add({
-          severity: newStatus ? 'success' : 'warn',
-          summary: newStatus ? 'Employee activated' : 'Employee deactivated',
-          detail: `${employee.firstName} ${employee.lastName} is now ${newStatus ? 'active' : 'inactive'}.`,
-          life: 3500
-        });
+        this.alerts.open(`${employee.firstName} ${employee.lastName} is now ${newStatus ? 'active' : 'inactive'}.`, {
+          label: newStatus ? 'Employee activated' : 'Employee deactivated',
+          appearance: newStatus ? 'success' : 'warning'
+        }).subscribe();
       },
       error: () => {
-        this.messages.add({
-          severity: 'error',
-          summary: 'Update failed',
-          detail: 'Failed to update employee status. Please try again.',
-          life: 5000
-        });
+        this.alerts.open('Failed to update employee status. Please try again.', {
+          label: 'Update failed',
+          appearance: 'error'
+        }).subscribe();
       }
     });
   }
 
   openAddDialog() {
-    const ref = this.dialog.open<EmployeeFormResult>(EmployeeAddDialogComponent, {
+    const ref = this.dialog.open<EmployeeFormResult>(EmployeeFormComponent, {
       width: '580px',
       maxWidth: '95vw',
       disableClose: false
@@ -131,12 +140,32 @@ export class EmployeeListComponent implements OnInit {
           isTotpSetUp: result.isTotpSetUp
         };
         this.employees.update(list => [newEmployee, ...list]);
-        this.messages.add({
-          severity: 'success',
-          summary: 'Employee created',
-          detail: `${result.firstName} ${result.lastName} (${result.employeeCode}) added successfully.`,
-          life: 4000
-        });
+      }
+    });
+  }
+
+  openEditDialog(employee: EmployeeListDto) {
+    const ref = this.dialog.open<EmployeeFormResult>(EmployeeFormComponent, {
+      width: '580px',
+      maxWidth: '95vw',
+      disableClose: false,
+      data: { employeeId: employee.id }
+    }) as DialogRef<EmployeeFormResult>;
+
+    ref.closed.subscribe((result: EmployeeFormResult | undefined) => {
+      if (result) {
+        this.employees.update(list =>
+          list.map(e => e.id === employee.id ? {
+            ...e,
+            employeeCode: result.employeeCode,
+            firstName: result.firstName,
+            lastName: result.lastName,
+            email: result.email,
+            phone: result.phone,
+            isActive: result.isActive,
+            isTotpSetUp: result.isTotpSetUp
+          } : e)
+        );
       }
     });
   }

@@ -1,10 +1,11 @@
 import { Component, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { TuiIcon } from '@taiga-ui/core';
 
 @Component({
   selector: 'app-metric-card',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TuiIcon],
   template: `
     <div class="card mb-0">
       <div class="flex justify-between mb-4">
@@ -17,7 +18,7 @@ import { CommonModule } from '@angular/common';
           </div>
         </div>
         <div class="flex items-center justify-center rounded-lg" [class]="iconBgClass()" style="width: 2.5rem; height: 2.5rem">
-          <i class="pi text-xl" [class]="icon() + ' ' + iconColorClass()"></i>
+          <tui-icon [icon]="icon()" class="text-xl" [class]="iconColorClass()"></tui-icon>
         </div>
       </div>
       @if (footerValue()) {

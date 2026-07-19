@@ -1,231 +1,340 @@
 <div class="space-y-6">
   <!-- Toolbar -->
-  <p-toolbar class="mb-4 block">
-    <ng-template pTemplate="start">
-      <div class="flex flex-wrap gap-2">
-        @if (pendingSyncCount() > 0) {
-          <p-button
-            label="Sync ({{ pendingSyncCount() }} pending)"
-            icon="pi pi-sync"
-            [loading]="loading()"
-            severity="warn"
-            (onClick)="sync.emit()"
-          ></p-button>
-        }
-        <p-button
-          text
-          raised
-          rounded
-          icon="pi pi-upload"
-          severity="help"
-          (onClick)="exportCSV()"
-        ></p-button>
+  <div class="toolbar-container">
+    <div class="flex items-center gap-2">
+      @if (pendingSyncCount() > 0) {
+        <button
+          tuiButton
+          size="s"
+          class="glass-btn-primary flex items-center gap-1.5 warning-btn"
+          (click)="sync.emit()"
+          [disabled]="loading()"
+        >
+          <tui-icon icon="@tui.sync" class="animate-spin-slow"></tui-icon>
+          <span>Sync ({{ pendingSyncCount() }} pending)</span>
+        </button>
+      }
+      <button
+        tuiButton
+        size="s"
+        class="glass-btn-flat"
+        (click)="exportCSV()"
+        title="Export CSV"
+      >
+        <tui-icon icon="@tui.download"></tui-icon>
+        <span>Export</span>
+      </button>
 
-        <p-button
-          text
-          raised
-          rounded
-          icon="pi pi-trash"
-          severity="danger"
-          (onClick)="deleteSelectedProducts.emit()"
-          [disabled]="!selectedProducts() || !selectedProducts().length"
-        ></p-button>
-      </div>
-    </ng-template>
+      <button
+        tuiButton
+        size="s"
+        class="glass-btn-flat delete-btn"
+        (click)="deleteSelectedProducts.emit()"
+        [disabled]="!selectedProducts() || !selectedProducts().length"
+        title="Delete Selected"
+      >
+        <tui-icon icon="@tui.trash-2"></tui-icon>
+        <span>Delete Selected ({{ selectedProducts().length }})</span>
+      </button>
+    </div>
 
-    <ng-template pTemplate="end">
-      <div class="flex flex-wrap gap-2">
-        <p-button
-          text
-          raised
-          rounded
-          icon="pi pi-plus"
-          severity="success"
-          (onClick)="addProduct.emit()"
-        ></p-button>
-      </div>
-    </ng-template>
-  </p-toolbar>
+    <div>
+      <button
+        tuiButton
+        size="s"
+        class="glass-btn-primary flex items-center gap-1.5"
+        (click)="addProduct.emit()"
+      >
+        <tui-icon icon="@tui.plus"></tui-icon>
+        <span>Add Product</span>
+      </button>
+    </div>
+  </div>
 
-  <!-- Filters Panel -->
-  <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+  <!-- Filters & Search -->
+  <div class="filters-container">
     <!-- Search Field -->
-    <span class="relative w-full md:w-80">
+    <div class="search-wrapper">
+      <label tuiLabel="Search" class="sr-only">Search</label>
       <input
-        pInputText
+        tuiTextfield
         type="text"
         [value]="searchQuery()"
         (input)="onSearchChange($event)"
         placeholder="Search SKU or Name..."
-        class="w-full font-sans"
+        class="search-input"
       />
-    </span>
+    </div>
 
-    <!-- Category Filter Dropdown -->
-    <p-iftalabel class="w-full md:w-64">
-      <p-multiselect
-        [options]="categories()"
-        [(ngModel)]="selectedCategories"
-        (onChange)="onCategoryChange()"
-        [showClear]="true"
-        class="w-full"
-      ></p-multiselect>
-      <label>Filter Category</label>
-    </p-iftalabel>
+    <!-- Premium Category Badges Filter -->
+    <div class="category-filters">
+      <span class="filter-label">Categories:</span>
+      <div class="badges-row">
+        @for (cat of categories(); track cat) {
+          <button
+            type="button"
+            (click)="toggleCategoryFilter(cat)"
+            class="category-badge"
+            [class.active]="selectedCategories().includes(cat)"
+          >
+            {{ cat }}
+          </button>
+        }
+        @if (selectedCategories().length > 0) {
+          <button (click)="clearCategoryFilters()" class="clear-badge">
+            <tui-icon icon="@tui.x" class="text-xs"></tui-icon>
+            <span>Clear</span>
+          </button>
+        }
+      </div>
+    </div>
   </div>
 
-  <!-- PrimeNG Table with checkboxes & row actions -->
-  <p-table
-    #dt
-    [value]="products()"
-    [lazy]="true"
-    (onLazyLoad)="onTableLazyLoad($event)"
-    [paginator]="true"
-    [rows]="pageSize()"
-    [totalRecords]="totalCount()"
-    [loading]="loading()"
-    [rowsPerPageOptions]="[10, 20, 50]"
-    [(selection)]="selectedProducts"
-    [rowHover]="true"
-    dataKey="id"
-  >
-    <ng-template pTemplate="header">
-      <tr>
-        <th style="width: 3rem">
-          <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
-        </th>
-        <th pSortableColumn="sku" class="w-32">SKU <p-sortIcon field="sku"></p-sortIcon></th>
-        <th pSortableColumn="name">Product Name <p-sortIcon field="name"></p-sortIcon></th>
-        <th pSortableColumn="category" class="w-40">
-          Category <p-sortIcon field="category"></p-sortIcon>
-        </th>
-        <th pSortableColumn="quantityInStock" class="text-right w-40">
-          Stock <p-sortIcon field="quantityInStock"></p-sortIcon>
-        </th>
-        <th pSortableColumn="costPrice" class="text-right w-32">
-          Cost <p-sortIcon field="costPrice"></p-sortIcon>
-        </th>
-        <th pSortableColumn="sellingPrice" class="text-right w-32">
-          Price <p-sortIcon field="sellingPrice"></p-sortIcon>
-        </th>
-        <th class="w-48">Supplier</th>
-        <th class="text-center w-24">Sync</th>
-        <th style="min-width: 8rem"></th>
-      </tr>
-    </ng-template>
+  <!-- Liquid Glass Table -->
+  <div class="table-container">
+    <tui-loader [loading]="loading()" [overlay]="true">
+      <table class="products-table">
+        <thead>
+          <tr>
+            <th class="checkbox-col">
+              <input
+                type="checkbox"
+                [checked]="isAllSelected()"
+                (change)="toggleAll($any($event.target).checked)"
+              />
+            </th>
+            <th (click)="toggleSort('sku')" class="sortable-col w-32">
+              <div class="flex items-center gap-1">
+                <span>SKU</span>
+                @if (sortBy() === 'sku') {
+                  <tui-icon [icon]="sortDescending() ? '@tui.arrow-down' : '@tui.arrow-up'" class="text-xs"></tui-icon>
+                } @else {
+                  <tui-icon icon="@tui.chevrons-up-down" class="text-xs opacity-30"></tui-icon>
+                }
+              </div>
+            </th>
+            <th (click)="toggleSort('name')" class="sortable-col">
+              <div class="flex items-center gap-1">
+                <span>Product Name</span>
+                @if (sortBy() === 'name') {
+                  <tui-icon [icon]="sortDescending() ? '@tui.arrow-down' : '@tui.arrow-up'" class="text-xs"></tui-icon>
+                } @else {
+                  <tui-icon icon="@tui.chevrons-up-down" class="text-xs opacity-30"></tui-icon>
+                }
+              </div>
+            </th>
+            <th (click)="toggleSort('category')" class="sortable-col w-40">
+              <div class="flex items-center gap-1">
+                <span>Category</span>
+                @if (sortBy() === 'category') {
+                  <tui-icon [icon]="sortDescending() ? '@tui.arrow-down' : '@tui.arrow-up'" class="text-xs"></tui-icon>
+                } @else {
+                  <tui-icon icon="@tui.chevrons-up-down" class="text-xs opacity-30"></tui-icon>
+                }
+              </div>
+            </th>
+            <th (click)="toggleSort('quantityInStock')" class="sortable-col text-right w-40">
+              <div class="flex items-center justify-end gap-1">
+                <span>Stock</span>
+                @if (sortBy() === 'quantityInStock') {
+                  <tui-icon [icon]="sortDescending() ? '@tui.arrow-down' : '@tui.arrow-up'" class="text-xs"></tui-icon>
+                } @else {
+                  <tui-icon icon="@tui.chevrons-up-down" class="text-xs opacity-30"></tui-icon>
+                }
+              </div>
+            </th>
+            <th (click)="toggleSort('costPrice')" class="sortable-col text-right w-32">
+              <div class="flex items-center justify-end gap-1">
+                <span>Cost</span>
+                @if (sortBy() === 'costPrice') {
+                  <tui-icon [icon]="sortDescending() ? '@tui.arrow-down' : '@tui.arrow-up'" class="text-xs"></tui-icon>
+                } @else {
+                  <tui-icon icon="@tui.chevrons-up-down" class="text-xs opacity-30"></tui-icon>
+                }
+              </div>
+            </th>
+            <th (click)="toggleSort('sellingPrice')" class="sortable-col text-right w-32">
+              <div class="flex items-center justify-end gap-1">
+                <span>Price</span>
+                @if (sortBy() === 'sellingPrice') {
+                  <tui-icon [icon]="sortDescending() ? '@tui.arrow-down' : '@tui.arrow-up'" class="text-xs"></tui-icon>
+                } @else {
+                  <tui-icon icon="@tui.chevrons-up-down" class="text-xs opacity-30"></tui-icon>
+                }
+              </div>
+            </th>
+            <th class="w-48">Supplier</th>
+            <th class="text-center w-24">Sync</th>
+            <th class="actions-col w-32"></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (product of products(); track product.id) {
+            <tr [class.selected-row]="isProductSelected(product)">
+              <td>
+                <input
+                  type="checkbox"
+                  [checked]="isProductSelected(product)"
+                  (change)="toggleProduct(product, $any($event.target).checked)"
+                />
+              </td>
 
-    <ng-template pTemplate="body" let-product>
-      <tr>
-        <td>
-          <p-tableCheckbox [value]="product"></p-tableCheckbox>
-        </td>
+              <!-- SKU -->
+              <td>
+                <span class="sku-cell font-mono font-semibold text-xs text-[var(--accent)]">
+                  {{ product.sku }}
+                </span>
+              </td>
 
-        <!-- SKU -->
-        <td>
-          <span class="font-mono font-semibold text-xs text-[var(--accent)]">
-            {{ product.sku }}
-          </span>
-        </td>
+              <!-- Name -->
+              <td class="font-medium text-[var(--text-primary)]">
+                <div>
+                  {{ product.name }}
+                  @if (product.description) {
+                    <span
+                      class="block text-xs text-[var(--text-muted)] font-normal mt-0.5 truncate max-w-xs"
+                      [title]="product.description"
+                    >
+                      {{ product.description }}
+                    </span>
+                  }
+                </div>
+              </td>
 
-        <!-- Name -->
-        <td class="font-medium text-[var(--text-primary)]">
-          <div>
-            {{ product.name }}
-            @if (product.description) {
-              <span
-                class="block text-xs text-[var(--text-muted)] font-normal mt-0.5 truncate max-w-xs"
-                [title]="product.description"
-              >
-                {{ product.description }}
-              </span>
-            }
-          </div>
-        </td>
+              <!-- Category -->
+              <td class="text-[var(--text-muted)]">
+                {{ product.category }}
+              </td>
 
-        <!-- Category -->
-        <td class="text-[var(--text-muted)]">
-          {{ product.category }}
-        </td>
+              <!-- Stock Level -->
+              <td class="text-right">
+                <span
+                  [class]="
+                    product.quantityInStock <= product.reorderLevel
+                      ? 'stock-badge badge-warning'
+                      : 'stock-badge badge-ok'
+                  "
+                >
+                  {{ product.quantityInStock }}
+                </span>
+              </td>
 
-        <!-- Stock Level with Badge warning -->
-        <td class="text-right">
-          <span
-            [class]="
-              product.quantityInStock <= product.reorderLevel
-                ? 'text-rose-400 bg-rose-500/10 px-2 py-0.5 rounded text-xs font-semibold border border-rose-500/20'
-                : 'text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded text-xs font-semibold border border-emerald-500/20'
-            "
-          >
-            {{ product.quantityInStock }}
-          </span>
-        </td>
+              <!-- Cost -->
+              <td class="text-right font-mono text-xs text-[var(--text-muted)]">
+                ${{ product.costPrice | number: '1.2-2' }}
+              </td>
 
-        <!-- Cost -->
-        <td class="text-right font-mono text-xs text-[var(--text-muted)]">
-          ${{ product.costPrice | number: '1.2-2' }}
-        </td>
+              <!-- Price -->
+              <td class="text-right font-mono text-xs text-[var(--text-primary)] font-semibold">
+                ${{ product.sellingPrice | number: '1.2-2' }}
+              </td>
 
-        <!-- Price -->
-        <td class="text-right font-mono text-xs text-[var(--text-primary)] font-semibold">
-          ${{ product.sellingPrice | number: '1.2-2' }}
-        </td>
+              <!-- Supplier -->
+              <td class="text-[var(--text-muted)] text-sm">
+                {{ product.supplier || '—' }}
+              </td>
 
-        <!-- Supplier -->
-        <td class="text-[var(--text-muted)] text-sm">
-          {{ product.supplier || '—' }}
-        </td>
+              <!-- Sync Status -->
+              <td class="text-center">
+                @switch (product.syncStatus) {
+                  @case ('synced') {
+                    <tui-icon icon="@tui.check-circle" class="text-emerald-400" title="Synced to backend"></tui-icon>
+                  }
+                  @case ('pending') {
+                    <tui-icon icon="@tui.sync" class="text-amber-400 animate-spin" title="Sync pending"></tui-icon>
+                  }
+                  @case ('failed') {
+                    <tui-icon icon="@tui.triangle-alert" class="text-rose-400" title="Sync failed"></tui-icon>
+                  }
+                  @default {
+                    <tui-icon icon="@tui.check-circle" class="text-[var(--text-muted)]"></tui-icon>
+                  }
+                }
+              </td>
 
-        <!-- Sync Status -->
-        <td class="text-center">
-          @switch (product.syncStatus) {
-            @case ('synced') {
-              <i class="pi pi-check-circle text-emerald-400" title="Synced to backend"></i>
-            }
-            @case ('pending') {
-              <i class="pi pi-sync text-amber-400 animate-spin" title="Sync pending"></i>
-            }
-            @case ('failed') {
-              <i class="pi pi-exclamation-triangle text-rose-400" title="Sync failed"></i>
-            }
-            @default {
-              <i class="pi pi-check-circle text-[var(--text-muted)]"></i>
-            }
+              <!-- Row Actions -->
+              <td>
+                <div class="flex gap-1.5 justify-end">
+                  <button
+                    tuiButton
+                    appearance="flat"
+                    size="xs"
+                    class="glass-btn-flat"
+                    (click)="editProduct.emit(product)"
+                    title="Edit"
+                  >
+                    <tui-icon icon="@tui.pencil"></tui-icon>
+                  </button>
+                  <button
+                    tuiButton
+                    appearance="flat"
+                    size="xs"
+                    class="glass-btn-flat delete-btn"
+                    (click)="deleteProduct.emit(product)"
+                    title="Delete"
+                  >
+                    <tui-icon icon="@tui.trash-2"></tui-icon>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="10" class="text-center p-8 text-[var(--text-muted)]">
+                <div class="flex flex-col items-center gap-2">
+                  <tui-icon icon="@tui.info" class="text-3xl"></tui-icon>
+                  <p class="font-semibold text-sm">No inventory items found</p>
+                  <p class="text-xs text-[var(--text-dim)]">Try adjusting your filters or search terms.</p>
+                </div>
+              </td>
+            </tr>
           }
-        </td>
+        </tbody>
+      </table>
+    </tui-loader>
+  </div>
 
-        <!-- Row Actions -->
-        <td>
-          <div class="flex gap-2 justify-end">
-            <p-button
-              icon="pi pi-pencil"
-              [rounded]="true"
-              [outlined]="true"
-              severity="success"
-              (onClick)="editProduct.emit(product)"
-            ></p-button>
-            <p-button
-              icon="pi pi-trash"
-              [rounded]="true"
-              [outlined]="true"
-              severity="danger"
-              (onClick)="deleteProduct.emit(product)"
-            ></p-button>
-          </div>
-        </td>
-      </tr>
-    </ng-template>
+  <!-- Numbered + Prev/Next Pagination Footer -->
+  @if (totalCount() > 0) {
+    <div class="pagination-wrapper">
+      <span class="pagination-info">
+        Showing {{ (page() - 1) * pageSize() + 1 }} to {{ Math.min(page() * pageSize(), totalCount()) }} of {{ totalCount() }} items
+      </span>
+      <div class="pagination-buttons">
+        <button
+          tuiButton
+          appearance="flat"
+          size="xs"
+          [disabled]="page() === 1"
+          (click)="setPage(page() - 1)"
+          class="glass-btn-flat"
+        >
+          <tui-icon icon="@tui.chevron-left"></tui-icon>
+        </button>
 
-    <!-- Empty State -->
-    <ng-template pTemplate="emptymessage">
-      <tr>
-        <td colspan="10" class="text-center p-8 text-[var(--text-muted)]">
-          <div class="flex flex-col items-center gap-2">
-            <i class="pi pi-info-circle text-3xl"></i>
-            <p class="font-semibold text-sm">No inventory items found</p>
-            <p class="text-xs text-[var(--text-dim)]">Try adjusting your filters or search terms.</p>
-          </div>
-        </td>
-      </tr>
-    </ng-template>
-  </p-table>
+        @for (p of pagesArray(); track p) {
+          <button
+            tuiButton
+            size="xs"
+            (click)="setPage(p)"
+            [class.glass-btn-primary]="page() === p"
+            [class.glass-btn-flat]="page() !== p"
+          >
+            {{ p }}
+          </button>
+        }
+
+        <button
+          tuiButton
+          appearance="flat"
+          size="xs"
+          [disabled]="page() === totalPages()"
+          (click)="setPage(page() + 1)"
+          class="glass-btn-flat"
+        >
+          <tui-icon icon="@tui.chevron-right"></tui-icon>
+        </button>
+      </div>
+    </div>
+  }
 </div>

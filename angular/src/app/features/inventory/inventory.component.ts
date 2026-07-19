@@ -1,14 +1,15 @@
-import { Component, OnInit, signal, effect, computed } from '@angular/core';
+import { Component, OnInit, signal, effect, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { CoreModule } from '../../core/core.module';
 import { InventoryService } from './inventory.service';
 import { LocalProduct } from '../../core/db.service';
-import { MessageService } from 'primeng/api';
+import { TuiNotificationService, TuiIcon } from '@taiga-ui/core';
+import { Dialog } from '@angular/cdk/dialog';
 import { forkJoin } from 'rxjs';
 import { MetricCardComponent } from './components/metric-card.component';
 import { InventoryListComponent } from './inventory-list/inventory-list.component';
-import { ProductDialogComponent } from './components/product-dialog.component';
+import { ProductFormComponent } from './product-form/product-form.component';
 
 @Component({
   selector: 'app-inventory',
@@ -19,12 +20,16 @@ import { ProductDialogComponent } from './components/product-dialog.component';
     MetricCardComponent,
     RouterLink,
     InventoryListComponent,
-    ProductDialogComponent,
+    TuiIcon
   ],
   templateUrl: './inventory.component.html',
   styleUrl: './inventory.component.scss',
 })
 export class InventoryComponent implements OnInit {
+  private readonly inventoryService = inject(InventoryService);
+  private readonly alerts = inject(TuiNotificationService);
+  private readonly dialog = inject(Dialog);
+
   // Data Signals
   readonly products = signal<LocalProduct[]>([]);
   readonly totalCount = signal<number>(0);
@@ -78,10 +83,7 @@ export class InventoryComponent implements OnInit {
   // Online connection status
   isOnline = signal(navigator.onLine);
 
-  constructor(
-    private inventoryService: InventoryService,
-    private messageService: MessageService,
-  ) {
+  constructor() {
     this.isOnline = this.inventoryService.isOnline;
 
     // Reload items if online status transitions
@@ -116,12 +118,11 @@ export class InventoryComponent implements OnInit {
           // Dynamically add unique categories from db products to local filters
           this.updateCategoriesList(result.items);
         },
-        error: (err) => {
-          this.messageService.add({
-            severity: 'error',
-            summary: 'Fetch Failed',
-            detail: 'Unable to load products. Switched to offline view.',
-          });
+        error: () => {
+          this.alerts.open('Unable to load products. Switched to offline view.', {
+            label: 'Fetch Failed',
+            appearance: 'error'
+          }).subscribe();
           this.loading.set(false);
         },
       });
@@ -151,17 +152,38 @@ export class InventoryComponent implements OnInit {
 
   openAddDialog(): void {
     this.editingProduct.set(null);
-    this.displayAddDialog.set(true);
-  }
-
-  closeAddDialog(): void {
-    this.displayAddDialog.set(false);
-    this.editingProduct.set(null);
+    const ref = this.dialog.open<any>(ProductFormComponent, {
+      width: '500px',
+      maxWidth: '95vw',
+      data: {
+        product: null,
+        categories: this.categories()
+      }
+    });
+    ref.closed.subscribe(result => {
+      if (result) {
+        this.onSaveProduct(result);
+      }
+    });
   }
 
   editProduct(product: LocalProduct): void {
     this.editingProduct.set(product);
-    this.displayAddDialog.set(true);
+    const ref = this.dialog.open<any>(ProductFormComponent, {
+      width: '500px',
+      maxWidth: '95vw',
+      data: {
+        product,
+        categories: this.categories()
+      }
+    });
+    ref.closed.subscribe(result => {
+      if (result) {
+        this.onSaveProduct(result);
+      } else {
+        this.editingProduct.set(null);
+      }
+    });
   }
 
   deleteProduct(product: LocalProduct): void {
@@ -169,20 +191,18 @@ export class InventoryComponent implements OnInit {
       this.loading.set(true);
       this.inventoryService.deleteProduct(product.id).subscribe({
         next: () => {
-          this.messageService.add({
-            severity: 'success',
-            summary: 'Product Deleted',
-            detail: `"${product.name}" has been deleted successfully.`,
-          });
+          this.alerts.open(`"${product.name}" has been deleted successfully.`, {
+            label: 'Product Deleted',
+            appearance: 'success'
+          }).subscribe();
           this.selectedProducts = this.selectedProducts.filter((p) => p.id !== product.id);
           this.loadProducts();
         },
         error: () => {
-          this.messageService.add({
-            severity: 'error',
-            summary: 'Delete Failed',
-            detail: 'Unable to delete product.',
-          });
+          this.alerts.open('Unable to delete product.', {
+            label: 'Delete Failed',
+            appearance: 'error'
+          }).subscribe();
           this.loading.set(false);
         },
       });
@@ -202,20 +222,18 @@ export class InventoryComponent implements OnInit {
 
       forkJoin(deletions$).subscribe({
         next: () => {
-          this.messageService.add({
-            severity: 'success',
-            summary: 'Deletions Successful',
-            detail: `Selected ${count} product(s) deleted.`,
-          });
+          this.alerts.open(`Selected ${count} product(s) deleted.`, {
+            label: 'Deletions Successful',
+            appearance: 'success'
+          }).subscribe();
           this.selectedProducts = [];
           this.loadProducts();
         },
         error: () => {
-          this.messageService.add({
-            severity: 'error',
-            summary: 'Bulk Delete Failed',
-            detail: 'Failed to delete some or all selected products.',
-          });
+          this.alerts.open('Failed to delete some or all selected products.', {
+            label: 'Bulk Delete Failed',
+            appearance: 'error'
+          }).subscribe();
           this.selectedProducts = [];
           this.loadProducts();
         },
@@ -227,19 +245,17 @@ export class InventoryComponent implements OnInit {
     this.loading.set(true);
     this.inventoryService.syncPendingProducts().subscribe({
       next: () => {
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Sync Complete',
-          detail: 'Offline changes uploaded to the cloud database.',
-        });
+        this.alerts.open('Offline changes uploaded to the cloud database.', {
+          label: 'Sync Complete',
+          appearance: 'success'
+        }).subscribe();
         this.loadProducts();
       },
       error: () => {
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Sync Failed',
-          detail: 'Could not connect to server. Please try again later.',
-        });
+        this.alerts.open('Could not connect to server. Please try again later.', {
+          label: 'Sync Failed',
+          appearance: 'error'
+        }).subscribe();
         this.loading.set(false);
       },
     });
@@ -271,11 +287,10 @@ export class InventoryComponent implements OnInit {
 
       this.inventoryService.updateProduct(updatedProduct).subscribe({
         next: (product) => {
-          this.messageService.add({
-            severity: 'success',
-            summary: 'Product Updated',
-            detail: `"${product.name}" has been updated successfully.`,
-          });
+          this.alerts.open(`"${product.name}" has been updated successfully.`, {
+            label: 'Product Updated',
+            appearance: 'success'
+          }).subscribe();
           if (!this.categories().includes(product.category)) {
             this.categories.update((cats) => [...cats, product.category]);
           }
@@ -283,12 +298,11 @@ export class InventoryComponent implements OnInit {
           this.editingProduct.set(null);
           this.loadProducts();
         },
-        error: (err) => {
-          this.messageService.add({
-            severity: 'error',
-            summary: 'Save Error',
-            detail: 'Failed to update product.',
-          });
+        error: () => {
+          this.alerts.open('Failed to update product.', {
+            label: 'Save Error',
+            appearance: 'error'
+          }).subscribe();
           this.loading.set(false);
         },
       });
@@ -308,23 +322,21 @@ export class InventoryComponent implements OnInit {
 
       this.inventoryService.createProduct(newProduct).subscribe({
         next: (product) => {
-          this.messageService.add({
-            severity: 'success',
-            summary: 'Product Created',
-            detail: `"${product.name}" has been added successfully.`,
-          });
+          this.alerts.open(`"${product.name}" has been added successfully.`, {
+            label: 'Product Created',
+            appearance: 'success'
+          }).subscribe();
           if (!this.categories().includes(product.category)) {
             this.categories.update((cats) => [...cats, product.category]);
           }
           this.displayAddDialog.set(false);
           this.loadProducts();
         },
-        error: (err) => {
-          this.messageService.add({
-            severity: 'error',
-            summary: 'Save Error',
-            detail: 'Failed to create product.',
-          });
+        error: () => {
+          this.alerts.open('Failed to create product.', {
+            label: 'Save Error',
+            appearance: 'error'
+          }).subscribe();
           this.loading.set(false);
         },
       });
