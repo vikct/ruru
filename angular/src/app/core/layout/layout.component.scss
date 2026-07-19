@@ -18,7 +18,7 @@
   justify-content: space-between;
   padding: calc(var(--topbar-height) + 1.5rem) 1.5rem 1.5rem 1.5rem;
   transition: margin-left var(--transition-duration) var(--transition-timing);
-  margin-left: var(--sidebar-width);
+  margin-left: var(--sidebar-width); // Default to full sidebar offset on desktop
 
   @media (max-width: 991px) {
     margin-left: 0;

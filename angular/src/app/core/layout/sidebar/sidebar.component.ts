@@ -1,8 +1,8 @@
 import { Component, model, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { TooltipModule } from 'primeng/tooltip';
-import { AvatarModule } from 'primeng/avatar';
+import { TuiIcon, TuiHint } from '@taiga-ui/core';
+import { TuiAvatar } from '@taiga-ui/kit';
 import { AuthService } from '../../services/auth.service';
 
 interface NavItem {
@@ -14,7 +14,7 @@ interface NavItem {
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [CommonModule, RouterModule, TooltipModule, AvatarModule],
+  imports: [CommonModule, RouterModule, TuiIcon, TuiHint, TuiAvatar],
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.scss',
   host: {
@@ -44,19 +44,19 @@ export class AppSidebarComponent {
 
   readonly menuItems = computed<NavItem[]>(() => {
     const items: NavItem[] = [
-      { label: 'Dashboard',  icon: 'pi pi-objects-column', route: '/' },
-      { label: 'Sales / POS', icon: 'pi pi-shopping-cart',  route: '/sales' },
-      { label: 'Catalog',    icon: 'pi pi-box',            route: '/catalog' },
-      { label: 'Inventory',  icon: 'pi pi-warehouse',      route: '/inventory' },
+      { label: 'Dashboard',  icon: '@tui.layout-grid', route: '/' },
+      { label: 'Sales / POS', icon: '@tui.shopping-cart',  route: '/sales' },
+      { label: 'Catalog',    icon: '@tui.box',            route: '/catalog' },
+      { label: 'Inventory',  icon: '@tui.clipboard-list',      route: '/inventory' },
     ];
 
     if (this.authService.currentRoles().includes('Admin')) {
-      items.push({ label: 'Employees', icon: 'pi pi-users', route: '/employees' });
+      items.push({ label: 'Employees', icon: '@tui.users', route: '/employees' });
     }
 
     items.push(
-      { label: 'Reports',    icon: 'pi pi-chart-line',     route: '/reports' },
-      { label: 'Settings',   icon: 'pi pi-cog',            route: '/settings' }
+      { label: 'Reports',    icon: '@tui.bar-chart-2',     route: '/reports' },
+      { label: 'Settings',   icon: '@tui.settings',            route: '/settings' }
     );
 
     return items;

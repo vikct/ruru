@@ -55,7 +55,8 @@
   transition: background-color 0.2s, color 0.2s, justify-content 0.2s, padding 0.2s;
 
   .layout-menuitem-icon {
-    font-size: 1.2rem;
+    width: 1.2rem;
+    height: 1.2rem;
     transition: transform 0.2s;
   }
 
@@ -96,10 +97,8 @@
   transition: justify-content 0.2s;
 
   .footer-avatar {
-    width: 40px;
-    height: 40px;
-    background: var(--bg-item-active);
-    color: var(--accent);
+    background: var(--bg-item-active) !important;
+    color: var(--accent) !important;
     font-weight: 600;
   }
 
