@@ -2,11 +2,12 @@ import { Component, signal, computed, effect, HostListener } from '@angular/core
 import { CommonModule } from '@angular/common';
 import { AppSidebarComponent } from './sidebar/sidebar.component';
 import { AppHeaderComponent } from './header/header.component';
+import { AppFooterComponent } from './footer/footer.component';
 
 @Component({
   selector: 'app-layout',
   standalone: true,
-  imports: [CommonModule, AppSidebarComponent, AppHeaderComponent],
+  imports: [CommonModule, AppSidebarComponent, AppHeaderComponent, AppFooterComponent],
   templateUrl: './layout.component.html',
   styleUrl: './layout.component.scss'
 })

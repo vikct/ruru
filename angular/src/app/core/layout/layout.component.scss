@@ -16,13 +16,14 @@
   flex-direction: column;
   min-height: 100vh;
   justify-content: space-between;
-  padding: calc(var(--topbar-height) + 1.5rem) 1.5rem 1.5rem 1.5rem;
+  padding: calc(var(--topbar-height) + 1.5rem) 1.5rem calc(var(--footer-height) + 1.5rem) 1.5rem;
   transition: margin-left var(--transition-duration) var(--transition-timing);
   margin-left: calc(var(--sidebar-width) + 1.5rem); // Floating inset padding
 
   @media (max-width: 991px) {
     margin-left: 0;
     padding-top: calc(var(--topbar-height) + 1rem);
+    padding-bottom: calc(var(--footer-height) + 1rem);
     padding-left: 1rem;
     padding-right: 1rem;
   }
@@ -30,6 +31,17 @@
 
 .layout-main {
   flex: 1 1 auto;
+}
+
+// ── App Footer Host Layout ─────────────────────────────────
+app-footer {
+  position: fixed;
+  bottom: 0;
+  left: var(--sidebar-width);
+  right: 0;
+  height: var(--footer-height);
+  z-index: 995; // Below sidebar (996/999) and topbar (997)
+  transition: left var(--transition-duration) var(--transition-timing);
 }
 
 // ── Desktop Sidebar Collapse ───────────────────────────────
@@ -41,6 +53,9 @@
     app-sidebar {
       width: calc(var(--sidebar-collapsed-width) - 1.5rem);
     }
+    app-footer {
+      left: var(--sidebar-collapsed-width);
+    }
   }
 }
 
@@ -48,6 +63,10 @@
 @media (max-width: 991px) {
   app-sidebar {
     transform: translateX(calc(-100% - 1.5rem));
+  }
+
+  app-footer {
+    left: 0;
   }
 
   .layout-wrapper.layout-mobile-active {
