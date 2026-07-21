@@ -1,4 +1,4 @@
-import { Component, signal, computed, effect } from '@angular/core';
+import { Component, signal, computed, effect, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AppSidebarComponent } from './sidebar/sidebar.component';
 import { AppHeaderComponent } from './header/header.component';
@@ -25,5 +25,31 @@ export class AppLayoutComponent {
     effect(() => {
       localStorage.setItem('ruru-sidebar-collapsed', String(this.collapsed()));
     });
+  }
+
+  private isDesktop = window.innerWidth >= 992;
+
+  @HostListener('window:resize')
+  onResize() {
+    const currentIsDesktop = window.innerWidth >= 992;
+    if (currentIsDesktop !== this.isDesktop) {
+      if (currentIsDesktop) {
+        // Transitioning from Mobile to Desktop
+        if (this.isMobileOpen()) {
+          this.collapsed.set(false); // Open on mobile -> Expanded on desktop
+        } else {
+          this.collapsed.set(true);  // Closed on mobile -> Collapsed on desktop
+        }
+        this.isMobileOpen.set(false); // Clean up mobile drawer state
+      } else {
+        // Transitioning from Desktop to Mobile
+        if (!this.collapsed()) {
+          this.isMobileOpen.set(true);  // Expanded on desktop -> Open on mobile
+        } else {
+          this.isMobileOpen.set(false); // Collapsed on desktop -> Closed on mobile
+        }
+      }
+      this.isDesktop = currentIsDesktop;
+    }
   }
 }

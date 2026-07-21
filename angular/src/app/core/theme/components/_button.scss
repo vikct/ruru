@@ -1,0 +1,137 @@
+// ──────────────────────────────────────────────────────────
+// Taiga UI Button Component iOS Liquid Glass Styles
+// ──────────────────────────────────────────────────────────
+
+[tuiButton],
+.glass-btn-primary,
+.glass-btn-flat {
+  // Shape: Pill (9999px)
+  border-radius: 9999px !important;
+  overflow: hidden;
+
+  // iOS liquid glass resting state
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+
+  // Typography & spacing defaults
+  font-weight: 500;
+  transition: 
+    background-color 250ms ease,
+    background 250ms ease,
+    border-color 250ms ease,
+    box-shadow 250ms ease,
+    color 250ms ease,
+    transform 200ms ease-out !important;
+
+  // Taiga UI color variable overrides
+  --tui-text-primary: inherit;
+  --tui-text-secondary: inherit;
+  --tui-text-tertiary: inherit;
+
+  // Default / Primary Appearance: Indigo Saturated Liquid Glass
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.9), rgba(79, 70, 229, 0.85)) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+  box-shadow: 
+    0 4px 14px var(--accent-glow),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
+
+  &:hover {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.98), rgba(79, 70, 229, 0.95)) !important;
+    box-shadow: 
+      0 6px 18px var(--accent-glow),
+      inset 0 1px 0 rgba(255, 255, 255, 0.4) !important;
+    transform: scale(1.03) !important;
+    color: #ffffff !important;
+  }
+
+  &:active {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.8), rgba(79, 70, 229, 0.8)) !important;
+    transform: scale(0.97) !important;
+    box-shadow: 0 2px 8px var(--accent-glow) !important;
+  }
+
+  // Flat / Secondary / Grayscale Appearance: Subtle Liquid Glass Tint
+  &[appearance="flat"],
+  &[appearance="flat-grayscale"],
+  &.glass-btn-flat {
+    background: var(--glass-tint) !important;
+    color: var(--text-primary) !important;
+    border: 1px solid var(--glass-border) !important;
+    box-shadow: 
+      0 4px 12px rgba(99, 102, 241, 0.08),
+      0 1px 3px rgba(99, 102, 241, 0.04) !important;
+
+    &:hover {
+      background: var(--glass-tint-hover) !important;
+      color: var(--text-primary) !important;
+      border-color: var(--glass-border) !important;
+      box-shadow: 
+        0 6px 16px rgba(99, 102, 241, 0.14),
+        0 2px 4px rgba(99, 102, 241, 0.06) !important;
+      transform: scale(1.03) !important;
+    }
+
+    &:active {
+      background: var(--glass-tint-active) !important;
+      transform: scale(0.97) !important;
+      box-shadow: 0 2px 6px rgba(99, 102, 241, 0.08) !important;
+    }
+  }
+
+  // Explicit Primary Class helper
+  &.glass-btn-primary {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.9), rgba(79, 70, 229, 0.85)) !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(255, 255, 255, 0.25) !important;
+  }
+
+  // Destructive / Warning Appearance
+  &[appearance="destructive"],
+  &.delete-btn {
+    background: rgba(239, 68, 68, 0.15) !important;
+    color: #ef4444 !important;
+    border: 1px solid rgba(239, 68, 68, 0.3) !important;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.12) !important;
+
+    &:hover {
+      background: rgba(239, 68, 68, 0.25) !important;
+      color: #ef4444 !important;
+      box-shadow: 0 6px 16px rgba(239, 68, 68, 0.2) !important;
+    }
+
+    &:active {
+      background: rgba(239, 68, 68, 0.35) !important;
+    }
+  }
+
+  &.warning-btn {
+    background: rgba(245, 158, 11, 0.15) !important;
+    color: #f59e0b !important;
+    border: 1px solid rgba(245, 158, 11, 0.3) !important;
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.12) !important;
+
+    &:hover {
+      background: rgba(245, 158, 11, 0.25) !important;
+      color: #f59e0b !important;
+    }
+  }
+
+  // Disable scale transformation on dropdown triggers / popups to prevent jittering
+  &[tuiDropdown],
+  &.profile-button {
+    &:hover,
+    &:active {
+      transform: none !important;
+    }
+  }
+
+  // Disabled state
+  &:disabled,
+  &[disabled] {
+    opacity: 0.55 !important;
+    pointer-events: none !important;
+    transform: none !important;
+    box-shadow: none !important;
+  }
+}
