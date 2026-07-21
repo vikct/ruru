@@ -80,8 +80,23 @@ app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();
 
+// Health check endpoint (used by Render keep-alive cron)
+app.MapGet("/health", async (Ruru.Infrastructure.Persistence.ApplicationDbContext db) =>
+{
+    var canConnect = await db.Database.CanConnectAsync();
+    return canConnect ? Results.Ok(new { Status = "Healthy", DbConnected = true }) 
+                      : Results.Problem("Database connection failed");
+});
+
 // Map Carter endpoints
 app.MapCarter();
+
+// Apply migrations automatically on startup
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<Ruru.Infrastructure.Persistence.ApplicationDbContext>();
+    await Microsoft.EntityFrameworkCore.RelationalDatabaseFacadeExtensions.MigrateAsync(dbContext.Database);
+}
 
 app.Run();
 

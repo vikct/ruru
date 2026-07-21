@@ -63,7 +63,7 @@
 - Produces: Resilient DbContext registered in DI container.
 
 - [ ] **Step 1: Write the Dependency Injection changes**
-  Modify [DependencyInjection.cs](file:///Users/victortan/Repos/ruru/backend/src/Infrastructure/DependencyInjection.cs) to use `sqlOptions.EnableRetryOnFailure()` for the Npgsql configuration.
+  Modify [DependencyInjection.cs](file:///Users/victortan/Repos/ruru/backend/src/Infrastructure/DependencyInjection.cs) to use `sqlOptions.EnableRetryOnFailure()` for the Npgsql configuration and support `postgresql://` URI connection strings.
 
   Replace:
   ```csharp
@@ -83,7 +83,7 @@
   ```csharp
           services.AddDbContext<ApplicationDbContext>(options =>
           {
-              if (connectionString.Contains("Host=") || connectionString.Contains("Server=") || connectionString.Contains("Port="))
+              if (connectionString.Contains("Host=") || connectionString.Contains("Server=") || connectionString.Contains("Port=") || connectionString.StartsWith("postgresql://") || connectionString.StartsWith("postgres://"))
               {
                   options.UseNpgsql(connectionString, sqlOptions =>
                   {
