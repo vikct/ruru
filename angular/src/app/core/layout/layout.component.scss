@@ -18,7 +18,7 @@
   justify-content: space-between;
   padding: calc(var(--topbar-height) + 1.5rem) 1.5rem 1.5rem 1.5rem;
   transition: margin-left var(--transition-duration) var(--transition-timing);
-  margin-left: var(--sidebar-width); // Default to full sidebar offset on desktop
+  margin-left: calc(var(--sidebar-width) + 1.5rem); // Floating inset padding
 
   @media (max-width: 991px) {
     margin-left: 0;
@@ -36,10 +36,10 @@
 @media (min-width: 992px) {
   .layout-wrapper.layout-static-inactive {
     .layout-main-container {
-      margin-left: var(--sidebar-collapsed-width);
+      margin-left: calc(var(--sidebar-collapsed-width) + 1.5rem); // Floating inset padding
     }
     app-sidebar {
-      width: var(--sidebar-collapsed-width);
+      width: calc(var(--sidebar-collapsed-width) - 1.5rem);
     }
   }
 }
@@ -47,7 +47,7 @@
 // ── Mobile Sidebar Drawer ──────────────────────────────────
 @media (max-width: 991px) {
   app-sidebar {
-    transform: translateX(-100%);
+    transform: translateX(calc(-100% - 1.5rem));
   }
 
   .layout-wrapper.layout-mobile-active {
