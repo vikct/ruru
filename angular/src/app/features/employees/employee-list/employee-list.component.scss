@@ -169,47 +169,7 @@
     0 10px 30px -5px rgba(0, 0, 0, 0.15);
 }
 
-// Custom Glass Button Styling for consistency with the app
-::ng-deep {
-  .glass-btn-primary {
-    border-radius: 9999px !important;
-    background: var(--glass-tint) !important;
-    backdrop-filter: blur(var(--glass-blur)) !important;
-    -webkit-backdrop-filter: blur(var(--glass-blur)) !important;
-    border: 1px solid var(--glass-border) !important;
-    color: var(--text-primary) !important;
-    box-shadow: 
-      0 4px 12px var(--accent-glow) !important;
-    transition: all 250ms ease !important;
 
-    &:hover {
-      background: var(--glass-tint-hover) !important;
-      transform: scale(1.02);
-    }
-
-    &:active {
-      background: var(--glass-tint-active) !important;
-      transform: scale(0.98);
-    }
-  }
-
-  .glass-btn-flat {
-    border-radius: 9999px !important;
-    background: transparent !important;
-    border: 1px solid transparent !important;
-    color: var(--text-primary) !important;
-    transition: all 250ms ease !important;
-
-    &:hover {
-      background: var(--glass-tint) !important;
-      border-color: var(--glass-border) !important;
-    }
-
-    &:active {
-      background: var(--glass-tint-hover) !important;
-    }
-  }
-}
 
 .pagination-wrapper {
   display: flex;
