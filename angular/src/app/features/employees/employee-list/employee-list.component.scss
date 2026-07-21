@@ -1,5 +1,5 @@
 .page-container {
-  padding: 2rem;
+  // padding: 2rem;
   background-color: var(--bg-base);
   box-sizing: border-box;
 }
@@ -31,7 +31,7 @@
   border: 1px solid var(--glass-border);
   border-radius: 16px;
   overflow-x: auto;
-  box-shadow: 
+  box-shadow:
     inset 1px 1px 0 var(--glass-border),
     0 10px 30px -5px rgba(0, 0, 0, 0.15);
 }
@@ -43,7 +43,8 @@
   text-align: left;
   font-size: 0.875rem;
 
-  th, td {
+  th,
+  td {
     padding: 1rem 1.5rem;
     border-bottom: 1px solid var(--glass-border);
     color: var(--text-primary);
@@ -60,7 +61,7 @@
 
   tr {
     transition: background-color 200ms ease;
-    
+
     &:hover {
       background-color: var(--glass-tint-hover);
     }
@@ -133,7 +134,7 @@
 
   .deactivate-btn {
     color: #ef4444 !important;
-    
+
     &:hover {
       background-color: rgba(239, 68, 68, 0.12) !important;
     }
@@ -141,7 +142,7 @@
 
   .activate-btn {
     color: #10b981 !important;
-    
+
     &:hover {
       background-color: rgba(16, 185, 129, 0.12) !important;
     }
@@ -164,12 +165,10 @@
   border: 1px solid var(--glass-border);
   border-radius: 16px;
   color: var(--text-muted);
-  box-shadow: 
+  box-shadow:
     inset 1px 1px 0 var(--glass-border),
     0 10px 30px -5px rgba(0, 0, 0, 0.15);
 }
-
-
 
 .pagination-wrapper {
   display: flex;
