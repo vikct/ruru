@@ -1,0 +1,70 @@
+<h2>Mobile Sidebar Layout Comparison</h2>
+<p class="subtitle">Select the option that works best for screen widths under 992px.</p>
+
+<div class="split">
+  <div class="mockup">
+    <div class="mockup-header">Option A: Full-Height Drawer (Recommended)</div>
+    <div class="mockup-body" style="height: 350px; background: #1e1e2e; position: relative; overflow: hidden; border-radius: 4px; font-family: sans-serif; color: #cdd6f4;">
+      <!-- Topbar -->
+      <div style="height: 40px; background: #11111b; display: flex; align-items: center; justify-content: space-between; padding: 0 10px; border-bottom: 1px solid #313244;">
+        <span style="font-weight: bold; color: #a6e3a1; font-size: 12px;">☰ Ruru POS</span>
+        <span style="font-size: 10px; color: #89b4fa;">VT</span>
+      </div>
+      <!-- Overlay Mask -->
+      <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 10;"></div>
+      <!-- Full Height Drawer -->
+      <div style="position: absolute; top: 0; left: 0; width: 120px; height: 100%; background: #181825; border-right: 1px solid #313244; z-index: 20; padding: 10px; box-sizing: border-box;">
+        <div style="font-weight: bold; color: #a6e3a1; font-size: 12px; margin-bottom: 15px; border-bottom: 1px solid #313244; padding-bottom: 5px;">Ruru POS</div>
+        <div style="font-size: 10px; color: #cdd6f4; margin: 8px 0; background: #313244; padding: 4px; border-radius: 4px;">Inventory</div>
+        <div style="font-size: 10px; color: #a6adc8; margin: 8px 0;">Dashboard</div>
+        <div style="font-size: 10px; color: #a6adc8; margin: 8px 0;">Sales</div>
+      </div>
+      <!-- Content Area -->
+      <div style="padding: 15px; font-size: 11px; margin-left: 0;">
+        <h4>Inventory Page</h4>
+        <p style="color: #a6adc8; font-size: 10px;">Content is blurred/dimmed behind mask.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="mockup">
+    <div class="mockup-header">Option B: Under-Topbar Drawer</div>
+    <div class="mockup-body" style="height: 350px; background: #1e1e2e; position: relative; overflow: hidden; border-radius: 4px; font-family: sans-serif; color: #cdd6f4;">
+      <!-- Topbar -->
+      <div style="height: 40px; background: #11111b; display: flex; align-items: center; justify-content: space-between; padding: 0 10px; border-bottom: 1px solid #313244; position: relative; z-index: 30;">
+        <span style="font-weight: bold; color: #a6e3a1; font-size: 12px;">☰ Ruru POS</span>
+        <span style="font-size: 10px; color: #89b4fa;">VT</span>
+      </div>
+      <!-- Overlay Mask -->
+      <div style="position: absolute; top: 40px; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 10;"></div>
+      <!-- Under Topbar Drawer -->
+      <div style="position: absolute; top: 40px; left: 0; width: 120px; height: calc(100% - 40px); background: #181825; border-right: 1px solid #313244; z-index: 20; padding: 10px; box-sizing: border-box;">
+        <div style="font-size: 10px; color: #cdd6f4; margin: 8px 0; background: #313244; padding: 4px; border-radius: 4px;">Inventory</div>
+        <div style="font-size: 10px; color: #a6adc8; margin: 8px 0;">Dashboard</div>
+        <div style="font-size: 10px; color: #a6adc8; margin: 8px 0;">Sales</div>
+      </div>
+      <!-- Content Area -->
+      <div style="padding: 55px 15px 15px 15px; font-size: 11px; margin-left: 0;">
+        <h4>Inventory Page</h4>
+        <p style="color: #a6adc8; font-size: 10px;">Content is blurred/dimmed behind mask.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="options">
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Option A: Full-Height Drawer (Recommended)</h3>
+      <p>The sidebar covers the topbar header branding on the left when open. This is standard on mobile applications, providing a clean, distraction-free vertical drawer.</p>
+    </div>
+  </div>
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Option B: Under-Topbar Drawer</h3>
+      <p>The sidebar slides in below the topbar, keeping the topbar logo and buttons visible. However, the topbar itself remains blurred/dimmed under the mask, which can look slightly inconsistent.</p>
+    </div>
+  </div>
+</div>
