@@ -35,6 +35,9 @@ yarn-error.log*
 .env.production
 .env.staging
 
+# Local Secrets
+backend/src/WebApi/appsettings.secrets.json
+
 # Agentic Assistant (Superpowers)
 # .superpowers/
 # docs/superpowers/

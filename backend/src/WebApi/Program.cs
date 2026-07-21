@@ -7,6 +7,7 @@ using Ruru.Infrastructure;
 using Ruru.WebApi.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Configuration.AddJsonFile("appsettings.secrets.json", optional: true, reloadOnChange: true);
 
 // Add services to the container.
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
