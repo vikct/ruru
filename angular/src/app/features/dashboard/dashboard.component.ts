@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
-import { CoreModule } from '../../core/core.module';
+import { TuiButton, TuiIcon } from '@taiga-ui/core';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CoreModule],
+  imports: [TuiButton, TuiIcon],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss'
 })

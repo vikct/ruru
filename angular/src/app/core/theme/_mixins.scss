@@ -1,0 +1,17 @@
+// ──────────────────────────────────────────────────────────
+// Shared SCSS Mixins & Utilities
+// ──────────────────────────────────────────────────────────
+
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// Future responsive breakpoints, transition utilities, etc. can go here.

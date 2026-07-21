@@ -1,0 +1,151 @@
+<div class="page-container">
+  <div class="page-header">
+    <div>
+      <h1>Employee Management</h1>
+      <p class="subtitle">View and manage store employees, roles, and invite tokens.</p>
+    </div>
+    <button
+      tuiButton
+      size="m"
+      (click)="openAddDialog()"
+      class="glass-btn-primary"
+      tuiHint="Add Employee"
+      tuiHintDirection="bottom"
+    >
+      <tui-icon icon="@tui.user-plus"></tui-icon>
+    </button>
+  </div>
+
+  @if (loading()) {
+    <div class="loading-state">
+      <p>Loading employees...</p>
+    </div>
+  } @else if (error()) {
+    <div class="error-state">
+      <p>{{ error() }}</p>
+    </div>
+  } @else {
+    <div class="table-container">
+      <table class="employees-table">
+        <thead>
+          <tr>
+            <th>Employee Code</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Status</th>
+            <th>2FA (TOTP)</th>
+            <th class="actions-col">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (emp of paginatedEmployees(); track emp.id) {
+            <tr [class.inactive-row]="!emp.isActive">
+              <td class="code-cell">{{ emp.employeeCode }}</td>
+              <td class="name-cell">{{ emp.firstName }} {{ emp.lastName }}</td>
+              <td>{{ emp.email }}</td>
+              <td>{{ emp.phone || '-' }}</td>
+              <td>
+                <span class="status-badge" [class.status-active]="emp.isActive" [class.status-inactive]="!emp.isActive">
+                  {{ emp.isActive ? 'Active' : 'Inactive' }}
+                </span>
+              </td>
+              <td>
+                <span class="totp-badge" [class.totp-setup]="emp.isTotpSetUp" [class.totp-pending]="!emp.isTotpSetUp">
+                  {{ emp.isTotpSetUp ? 'Configured' : 'Pending' }}
+                </span>
+              </td>
+              <td class="actions-cell">
+                <button
+                  tuiButton
+                  appearance="flat"
+                  size="xs"
+                  (click)="openEditDialog(emp)"
+                  class="glass-btn-flat"
+                  tuiHint="Edit"
+                  tuiHintDirection="bottom"
+                >
+                  <tui-icon icon="@tui.pencil"></tui-icon>
+                </button>
+                @if (emp.isActive && !emp.isTotpSetUp) {
+                  <button
+                    tuiButton
+                    appearance="flat"
+                    size="xs"
+                    (click)="sendInvite(emp)"
+                    class="glass-btn-flat"
+                    tuiHint="Invite"
+                    tuiHintDirection="bottom"
+                  >
+                    <tui-icon icon="@tui.send"></tui-icon>
+                  </button>
+                }
+                <button
+                  tuiButton
+                  appearance="flat"
+                  size="xs"
+                  [class.deactivate-btn]="emp.isActive"
+                  [class.activate-btn]="!emp.isActive"
+                  (click)="toggleStatus(emp)"
+                  class="glass-btn-flat"
+                  [tuiHint]="emp.isActive ? 'Deactivate' : 'Activate'"
+                  tuiHintDirection="bottom"
+                >
+                  <tui-icon [icon]="emp.isActive ? '@tui.user-x' : '@tui.user-check'"></tui-icon>
+                </button>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="7" class="empty-cell">No employees registered. Click "Add Employee" to create one.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Numbered + Prev/Next Pagination Footer -->
+    @if (employees().length > 0) {
+      <div class="pagination-wrapper">
+        <span class="pagination-info">
+          Showing {{ (page() - 1) * pageSize() + 1 }} to {{ Math.min(page() * pageSize(), employees().length) }} of {{ employees().length }} employees
+        </span>
+        <div class="pagination-buttons">
+          <button
+            tuiButton
+            appearance="flat"
+            size="xs"
+            [disabled]="page() === 1"
+            (click)="setPage(page() - 1)"
+            class="glass-btn-flat"
+          >
+            <tui-icon icon="@tui.chevron-left"></tui-icon>
+          </button>
+
+          @for (p of pagesArray(); track p) {
+            <button
+              tuiButton
+              size="xs"
+              (click)="setPage(p)"
+              [class.glass-btn-primary]="page() === p"
+              [class.glass-btn-flat]="page() !== p"
+            >
+              {{ p }}
+            </button>
+          }
+
+          <button
+            tuiButton
+            appearance="flat"
+            size="xs"
+            [disabled]="page() === totalPages()"
+            (click)="setPage(page() + 1)"
+            class="glass-btn-flat"
+          >
+            <tui-icon icon="@tui.chevron-right"></tui-icon>
+          </button>
+        </div>
+      </div>
+    }
+  }
+</div>

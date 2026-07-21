@@ -1,0 +1,74 @@
+<header class="layout-topbar">
+  <div class="topbar-bg-layer"></div>
+  <!-- Sidebar toggle button -->
+  <button
+    tuiIconButton
+    type="button"
+    appearance="flat-grayscale"
+    tuiHint="{{ collapsed() ? 'Expand sidebar' : 'Collapse sidebar' }}"
+    tuiHintDirection="bottom"
+    class="layout-menu-button"
+    (click)="toggleMenu()"
+  >
+    <tui-icon icon="@tui.menu" />
+  </button>
+  <!-- Logo -->
+  <a class="layout-topbar-logo" routerLink="/">
+    <span>Ruru POS</span>
+  </a>
+
+  <div class="layout-topbar-menu">
+    <!-- Global search -->
+    <tui-textfield tuiSize="m" class="layout-topbar-search">
+      <tui-icon tuiTextfieldIcon icon="@tui.search" />
+      <input tuiInput placeholder="Quick search… ⌘K" />
+    </tui-textfield>
+
+    <!-- Notifications -->
+    <span class="notification-wrapper">
+      <button tuiIconButton type="button" appearance="flat-grayscale">
+        <tui-icon icon="@tui.bell" />
+      </button>
+      <span tuiBadge size="s" appearance="destructive" class="notification-badge"> 3 </span>
+    </span>
+
+    <!-- Theme Toggle -->
+    <button
+      tuiIconButton
+      type="button"
+      appearance="flat-grayscale"
+      tuiHint="{{ themeService.isDarkMode() ? 'Switch to Light Mode' : 'Switch to Dark Mode' }}"
+      tuiHintDirection="bottom"
+      (click)="themeService.toggleTheme()"
+    >
+      <tui-icon [icon]="themeService.isDarkMode() ? '@tui.sun' : '@tui.moon'" />
+    </button>
+
+    <!-- User profile avatar button with dropdown -->
+    <button
+      tuiIconButton
+      type="button"
+      appearance="flat-grayscale"
+      class="profile-button"
+      [tuiDropdown]="profileMenu"
+      [(tuiDropdownOpen)]="open"
+    >
+      <span [tuiAvatar]="avatarLabel()" size="s"></span>
+    </button>
+
+    <ng-template #profileMenu>
+      <div class="profile-dropdown">
+        @if (currentUser(); as user) {
+          <div class="profile-user">
+            <span class="profile-name">{{ user.firstName }} {{ user.lastName }}</span>
+            <span class="profile-role">{{ userRole() }}</span>
+          </div>
+          <hr class="profile-divider" />
+        }
+        <button tuiButton type="button" appearance="flat" size="s" (click)="signOut()">
+          Sign Out
+        </button>
+      </div>
+    </ng-template>
+  </div>
+</header>

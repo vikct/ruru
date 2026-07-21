@@ -1,0 +1,9 @@
+// ──────────────────────────────────────────────────────────
+// Shared UI Components Forwarding Barrel
+// ──────────────────────────────────────────────────────────
+
+@forward './card';
+@forward './icon-button';
+@forward './textfield';
+@forward './dropdown';
+@forward './dialog';

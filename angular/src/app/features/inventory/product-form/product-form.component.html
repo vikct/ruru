@@ -1,0 +1,187 @@
+<div class="dialog-header">
+  <h2>{{ product() ? 'Edit Product Details' : 'Register New Inventory Product' }}</h2>
+  <p class="dialog-subtitle">Set up product info, stock counts, and pricing.</p>
+</div>
+
+<form [formGroup]="productForm" (ngSubmit)="submitProduct(); $event.preventDefault()" class="dialog-form">
+  <div class="form-grid">
+    <!-- SKU -->
+    <div class="form-group">
+      <label tuiLabel="SKU Code *" class="label-wrapper">
+        <input
+          tuiTextfield
+          type="text"
+          formControlName="sku"
+          placeholder="e.g. COF-LAT"
+          class="uppercase form-input"
+          [disabled]="!!product()"
+          required
+        />
+      </label>
+      @if (productForm.get('sku')?.touched && productForm.get('sku')?.errors) {
+        <small class="error-text">SKU is required (max 50 characters).</small>
+      }
+    </div>
+
+    <!-- Product Name -->
+    <div class="form-group">
+      <label tuiLabel="Product Name *" class="label-wrapper">
+        <input
+          tuiTextfield
+          type="text"
+          formControlName="name"
+          placeholder="e.g. Caffe Latte"
+          class="form-input"
+          required
+        />
+      </label>
+      @if (productForm.get('name')?.touched && productForm.get('name')?.errors) {
+        <small class="error-text">Product name is required (max 150 characters).</small>
+      }
+    </div>
+
+    <!-- Category Dropdown -->
+    <div class="form-group" [class.full-width]="!isCustomCategory()">
+      <label tuiLabel="Category *" class="label-wrapper">
+        <select
+          tuiTextfield
+          formControlName="category"
+          class="form-input"
+          required
+        >
+          @for (cat of categories(); track cat) {
+            <option [value]="cat">{{ cat }}</option>
+          }
+          <option value="CUSTOM">+ Add Custom Category...</option>
+        </select>
+      </label>
+    </div>
+
+    <!-- Custom Category Name (Conditional) -->
+    @if (isCustomCategory()) {
+      <div class="form-group">
+        <label tuiLabel="Custom Category Name *" class="label-wrapper">
+          <input
+            tuiTextfield
+            type="text"
+            formControlName="customCategory"
+            placeholder="e.g. Syrups"
+            class="form-input"
+            required
+          />
+        </label>
+        @if (productForm.get('customCategory')?.touched && productForm.get('customCategory')?.errors) {
+          <small class="error-text">Custom category name is required.</small>
+        }
+      </div>
+    }
+
+    <!-- Description -->
+    <div class="form-group full-width">
+      <label tuiLabel="Description" class="label-wrapper">
+        <textarea
+          tuiTextfield
+          formControlName="description"
+          rows="2"
+          placeholder="Brief details about the product..."
+          class="form-input resize-none"
+        ></textarea>
+      </label>
+    </div>
+
+    <!-- Stock Levels -->
+    <div class="form-group">
+      <label tuiLabel="Quantity in Stock *" class="label-wrapper">
+        <input
+          tuiTextfield
+          type="number"
+          formControlName="quantityInStock"
+          min="0"
+          placeholder="0"
+          class="form-input"
+          required
+        />
+      </label>
+      @if (productForm.get('quantityInStock')?.touched && productForm.get('quantityInStock')?.errors) {
+        <small class="error-text">Quantity must be 0 or more.</small>
+      }
+    </div>
+
+    <div class="form-group">
+      <label tuiLabel="Reorder Level *" class="label-wrapper">
+        <input
+          tuiTextfield
+          type="number"
+          formControlName="reorderLevel"
+          min="0"
+          placeholder="5"
+          class="form-input"
+          required
+        />
+      </label>
+      @if (productForm.get('reorderLevel')?.touched && productForm.get('reorderLevel')?.errors) {
+        <small class="error-text">Reorder level must be 0 or more.</small>
+      }
+    </div>
+
+    <!-- Costs -->
+    <div class="form-group">
+      <label tuiLabel="Cost Price ($) *" class="label-wrapper">
+        <input
+          tuiTextfield
+          type="number"
+          step="0.01"
+          formControlName="costPrice"
+          min="0"
+          placeholder="0.00"
+          class="form-input"
+          required
+        />
+      </label>
+      @if (productForm.get('costPrice')?.touched && productForm.get('costPrice')?.errors) {
+        <small class="error-text">Cost price must be 0 or more.</small>
+      }
+    </div>
+
+    <div class="form-group">
+      <label tuiLabel="Selling Price ($) *" class="label-wrapper">
+        <input
+          tuiTextfield
+          type="number"
+          step="0.01"
+          formControlName="sellingPrice"
+          min="0"
+          placeholder="0.00"
+          class="form-input"
+          required
+        />
+      </label>
+      @if (productForm.get('sellingPrice')?.touched && productForm.get('sellingPrice')?.errors) {
+        <small class="error-text">Selling price must be 0 or more.</small>
+      }
+    </div>
+
+    <!-- Supplier -->
+    <div class="form-group full-width">
+      <label tuiLabel="Supplier Name" class="label-wrapper">
+        <input
+          tuiTextfield
+          type="text"
+          formControlName="supplier"
+          placeholder="Supplier Name"
+          class="form-input"
+        />
+      </label>
+    </div>
+  </div>
+
+  <!-- Actions Panel -->
+  <div class="dialog-actions">
+    <button tuiButton type="button" appearance="flat" [disabled]="loading()" (click)="closeAddDialog()">
+      Cancel
+    </button>
+    <button tuiButton type="submit" [disabled]="loading() || productForm.invalid">
+      {{ product() ? 'Update Product' : 'Save Product' }}
+    </button>
+  </div>
+</form>

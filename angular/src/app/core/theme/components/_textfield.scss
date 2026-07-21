@@ -1,0 +1,95 @@
+// ──────────────────────────────────────────────────────────
+// Textfield Component Glass Styles
+// ──────────────────────────────────────────────────────────
+
+tui-textfield {
+  // Shape: pill (9999px)
+  border-radius: 9999px !important;
+  overflow: hidden;
+
+  // iOS liquid glass resting state
+  background: var(--glass-tint) !important;
+  backdrop-filter: blur(var(--glass-blur)) !important;
+  -webkit-backdrop-filter: blur(var(--glass-blur)) !important;
+
+  // 1px inset glass rim highlight
+  box-shadow: inset 1px 1px 0 var(--glass-border) !important;
+  border: none !important;
+
+  // Make text, icons, and labels inherit primary text color
+  color: var(--text-primary) !important;
+  --tui-text-primary: var(--text-primary);
+  --tui-text-secondary: var(--text-primary);
+  --tui-text-tertiary: var(--text-primary);
+
+  // Transitions
+  transition: 
+    background-color 250ms ease,
+    box-shadow 250ms ease,
+    color 250ms ease,
+    border-color 250ms ease !important;
+
+  // Focus-within state styling
+  &:focus-within {
+    background: var(--glass-tint-hover) !important;
+    box-shadow: 
+      inset 1px 1px 0 var(--glass-border),
+      0 0 0 2px var(--accent-glow) !important;
+  }
+
+  // Target internal input and its placeholder
+  input, 
+  [tuiInput] {
+    color: var(--text-primary) !important;
+    background: transparent !important;
+
+    &::placeholder {
+      color: var(--text-primary) !important;
+      opacity: 0.6 !important;
+    }
+  }
+
+  // Target internal icons
+  tui-icon,
+  [tuiTextfieldIcon] {
+    color: var(--text-primary) !important;
+  }
+}
+
+input[tuiTextfield],
+select[tuiTextfield],
+textarea[tuiTextfield] {
+  // Shape: pill (9999px) for inputs/selects, rounded (12px) for textareas
+  border-radius: 9999px !important;
+  background: var(--glass-tint) !important;
+  backdrop-filter: blur(var(--glass-blur)) !important;
+  -webkit-backdrop-filter: blur(var(--glass-blur)) !important;
+  box-shadow: inset 1px 1px 0 var(--glass-border) !important;
+  border: none !important;
+  color: var(--text-primary) !important;
+  padding: 0.5rem 1rem !important;
+  transition: 
+    background-color 250ms ease,
+    box-shadow 250ms ease,
+    color 250ms ease,
+    border-color 250ms ease !important;
+  outline: none !important;
+  box-sizing: border-box;
+
+  &::placeholder {
+    color: var(--text-primary) !important;
+    opacity: 0.6 !important;
+  }
+
+  &:focus {
+    background: var(--glass-tint-hover) !important;
+    box-shadow: 
+      inset 1px 1px 0 var(--glass-border),
+      0 0 0 2px var(--accent-glow) !important;
+  }
+}
+
+textarea[tuiTextfield] {
+  border-radius: 12px !important;
+  resize: vertical;
+}

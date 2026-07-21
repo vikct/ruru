@@ -1,0 +1,55 @@
+<div class="layout-sidebar" [class.layout-sidebar-collapsed]="collapsed()">
+  <ul class="layout-menu">
+    @for (item of menuItems(); track item.route) {
+      <li>
+        <a
+          [routerLink]="item.route"
+          routerLinkActive="active-route"
+          [routerLinkActiveOptions]="{ exact: item.route === '/' }"
+          class="layout-menuitem-root-action"
+          [tuiHint]="collapsed() ? item.label : ''"
+          tuiHintDirection="end"
+          (click)="isMobileOpen.set(false)"
+        >
+          <tui-icon [icon]="item.icon" class="layout-menuitem-icon" />
+          @if (!collapsed() || isMobileOpen()) {
+            <span class="layout-menuitem-text">{{ item.label }}</span>
+          }
+        </a>
+      </li>
+    }
+  </ul>
+
+  <!-- Sidebar Footer: Register status + User Profile -->
+  <div class="sidebar-footer">
+    @if (currentUser(); as user) {
+      <div class="user-profile" [tuiHint]="collapsed() ? (user.firstName + ' (' + userRole() + ')') : ''" tuiHintDirection="end">
+        <span [tuiAvatar]="avatarLabel()" size="s" class="footer-avatar"></span>
+        @if (!collapsed() || isMobileOpen()) {
+          <div class="user-details">
+            <span class="user-name">{{ user.firstName }} {{ user.lastName }}</span>
+            <span class="user-role">{{ userRole() }}</span>
+          </div>
+        }
+      </div>
+    } @else {
+      <div class="user-profile" [routerLink]="['/auth/login']" style="cursor: pointer;" [tuiHint]="collapsed() ? 'Sign In' : ''" tuiHintDirection="end">
+        <span tuiAvatar size="s" class="footer-avatar">
+          <tui-icon icon="@tui.user" />
+        </span>
+        @if (!collapsed() || isMobileOpen()) {
+          <div class="user-details">
+            <span class="user-name">Guest</span>
+            <span class="user-role">Click to Sign In</span>
+          </div>
+        }
+      </div>
+    }
+    <div class="register-status" [tuiHint]="collapsed() ? 'Register Open · Shift 1' : ''" tuiHintDirection="end">
+      <span class="status-dot"></span>
+      @if (!collapsed() || isMobileOpen()) {
+        <span class="status-text">Register Open · Shift 1</span>
+      }
+    </div>
+  </div>
+</div>

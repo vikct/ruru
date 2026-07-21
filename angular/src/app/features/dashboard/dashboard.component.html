@@ -3,8 +3,8 @@
     
     <!-- Header -->
     <div class="flex items-center space-x-3 mb-6">
-      <div class="p-3 bg-emerald-600 rounded-xl shadow-lg shadow-emerald-500/30">
-        <i class="pi pi-check text-2xl text-white"></i>
+      <div class="p-3 bg-emerald-600 rounded-xl shadow-lg shadow-emerald-500/30 flex items-center justify-center">
+        <tui-icon icon="@tui.check" class="text-2xl text-white"></tui-icon>
       </div>
       <div>
         <h1 class="text-2xl font-bold tracking-tight bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent">
@@ -22,28 +22,25 @@
     <!-- Checklist -->
     <div class="space-y-3 mb-8">
       <div class="flex items-center space-x-3 text-sm text-slate-300">
-        <i class="pi pi-shield text-indigo-500 text-base"></i>
+        <tui-icon icon="@tui.shield" class="text-indigo-500 text-base"></tui-icon>
         <span>CoreModule holds singletons and app layout</span>
       </div>
       <div class="flex items-center space-x-3 text-sm text-slate-300">
-        <i class="pi pi-palette text-indigo-500 text-base"></i>
-        <span>ThemeModule encapsulates PrimeNG + styles</span>
+        <tui-icon icon="@tui.palette" class="text-indigo-500 text-base"></tui-icon>
+        <span>ThemeModule encapsulates styling system</span>
       </div>
       <div class="flex items-center space-x-3 text-sm text-slate-300">
-        <i class="pi pi-desktop text-indigo-500 text-base"></i>
+        <tui-icon icon="@tui.monitor" class="text-indigo-500 text-base"></tui-icon>
         <span>AppComponent is now extremely lean</span>
       </div>
     </div>
 
-    <!-- PrimeNG Button -->
+    <!-- Taiga UI Glass Button -->
     <div class="flex justify-end">
-      <p-button 
-        label="Clean & Modular" 
-        icon="pi pi-sparkles" 
-        severity="info" 
-        [raised]="true" 
-        [rounded]="true">
-      </p-button>
+      <button tuiButton size="m" class="glass-btn-primary flex items-center gap-1">
+        <tui-icon icon="@tui.sparkles" class="text-sm"></tui-icon>
+        Clean & Modular
+      </button>
     </div>
 
   </div>

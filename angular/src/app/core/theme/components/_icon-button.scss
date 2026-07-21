@@ -1,0 +1,79 @@
+// ──────────────────────────────────────────────────────────
+// Icon Button Component Glass Styles
+// ──────────────────────────────────────────────────────────
+
+[tuiIconButton] {
+  // Override default shape to pill
+  border-radius: 9999px !important;
+  overflow: hidden;
+
+  // iOS liquid glass resting state
+  background: var(--glass-tint) !important;
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  
+  // Default resting state: Option 2 (Subtle indigo theme glow + outer border)
+  box-shadow: 
+    0 4px 12px rgba(99, 102, 241, 0.12),
+    0 1px 3px rgba(99, 102, 241, 0.08) !important;
+  border: 1px solid var(--glass-border) !important;
+
+  // Make text/icon color match the primary theme text
+  color: var(--text-primary) !important;
+  --tui-text-primary: var(--text-primary);
+  --tui-text-secondary: var(--text-primary);
+  --tui-text-tertiary: var(--text-primary);
+
+  // Transition for smooth hover and active state flipping
+  transition: 
+    background-color 250ms ease,
+    box-shadow 250ms ease,
+    color 250ms ease,
+    transform 200ms ease-out !important;
+
+  &:hover {
+    background: var(--glass-tint-hover) !important;
+    transform: scale(1.03);
+  }
+
+  &:active {
+    background: var(--glass-tint-active) !important;
+    transform: scale(0.97);
+  }
+
+  // Disable scale transformation on dropdown triggers to prevent position recalculation jitters
+  &[tuiDropdown],
+  &.profile-button {
+    &:hover,
+    &:active {
+      transform: none !important;
+    }
+  }
+
+  // 🧪 Option 1: Elevated (Subtle outer drop shadow + outer border instead of indigo glow)
+  &.glass-btn-1 {
+    background: var(--glass-tint) !important;
+    box-shadow: 
+      0 4px 10px rgba(15, 23, 42, 0.06),
+      0 2px 4px rgba(15, 23, 42, 0.04) !important;
+    border: 1px solid var(--glass-border) !important;
+  }
+
+  // 🧪 Option 2: Glow (Default style - subtle indigo theme glow + outer border)
+  &.glass-btn-2 {
+    background: var(--glass-tint) !important;
+    box-shadow: 
+      0 4px 12px rgba(99, 102, 241, 0.12),
+      0 1px 3px rgba(99, 102, 241, 0.08) !important;
+    border: 1px solid var(--glass-border) !important;
+  }
+
+  // 🧪 Option 3: Opaque Glass (More opaque frosted background + outer border + shadow)
+  &.glass-btn-3 {
+    background: var(--glass-bg) !important;
+    box-shadow: 
+      0 4px 12px rgba(15, 23, 42, 0.08),
+      0 1px 3px rgba(15, 23, 42, 0.04) !important;
+    border: 1px solid var(--glass-border) !important;
+  }
+}

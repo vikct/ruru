@@ -1,0 +1,340 @@
+<div class="space-y-6">
+  <!-- Toolbar -->
+  <div class="toolbar-container">
+    <div class="flex items-center gap-2">
+      @if (pendingSyncCount() > 0) {
+        <button
+          tuiButton
+          size="s"
+          class="glass-btn-primary flex items-center gap-1.5 warning-btn"
+          (click)="sync.emit()"
+          [disabled]="loading()"
+        >
+          <tui-icon icon="@tui.sync" class="animate-spin-slow"></tui-icon>
+          <span>Sync ({{ pendingSyncCount() }} pending)</span>
+        </button>
+      }
+      <button
+        tuiButton
+        size="s"
+        class="glass-btn-flat"
+        (click)="exportCSV()"
+        title="Export CSV"
+      >
+        <tui-icon icon="@tui.download"></tui-icon>
+        <span>Export</span>
+      </button>
+
+      <button
+        tuiButton
+        size="s"
+        class="glass-btn-flat delete-btn"
+        (click)="deleteSelectedProducts.emit()"
+        [disabled]="!selectedProducts() || !selectedProducts().length"
+        title="Delete Selected"
+      >
+        <tui-icon icon="@tui.trash-2"></tui-icon>
+        <span>Delete Selected ({{ selectedProducts().length }})</span>
+      </button>
+    </div>
+
+    <div>
+      <button
+        tuiButton
+        size="s"
+        class="glass-btn-primary flex items-center gap-1.5"
+        (click)="addProduct.emit()"
+      >
+        <tui-icon icon="@tui.plus"></tui-icon>
+        <span>Add Product</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Filters & Search -->
+  <div class="filters-container">
+    <!-- Search Field -->
+    <div class="search-wrapper">
+      <label tuiLabel="Search" class="sr-only">Search</label>
+      <input
+        tuiTextfield
+        type="text"
+        [value]="searchQuery()"
+        (input)="onSearchChange($event)"
+        placeholder="Search SKU or Name..."
+        class="search-input"
+      />
+    </div>
+
+    <!-- Premium Category Badges Filter -->
+    <div class="category-filters">
+      <span class="filter-label">Categories:</span>
+      <div class="badges-row">
+        @for (cat of categories(); track cat) {
+          <button
+            type="button"
+            (click)="toggleCategoryFilter(cat)"
+            class="category-badge"
+            [class.active]="selectedCategories().includes(cat)"
+          >
+            {{ cat }}
+          </button>
+        }
+        @if (selectedCategories().length > 0) {
+          <button (click)="clearCategoryFilters()" class="clear-badge">
+            <tui-icon icon="@tui.x" class="text-xs"></tui-icon>
+            <span>Clear</span>
+          </button>
+        }
+      </div>
+    </div>
+  </div>
+
+  <!-- Liquid Glass Table -->
+  <div class="table-container">
+    <tui-loader [loading]="loading()" [overlay]="true">
+      <table class="products-table">
+        <thead>
+          <tr>
+            <th class="checkbox-col">
+              <input
+                type="checkbox"
+                [checked]="isAllSelected()"
+                (change)="toggleAll($any($event.target).checked)"
+              />
+            </th>
+            <th (click)="toggleSort('sku')" class="sortable-col w-32">
+              <div class="flex items-center gap-1">
+                <span>SKU</span>
+                @if (sortBy() === 'sku') {
+                  <tui-icon [icon]="sortDescending() ? '@tui.arrow-down' : '@tui.arrow-up'" class="text-xs"></tui-icon>
+                } @else {
+                  <tui-icon icon="@tui.chevrons-up-down" class="text-xs opacity-30"></tui-icon>
+                }
+              </div>
+            </th>
+            <th (click)="toggleSort('name')" class="sortable-col">
+              <div class="flex items-center gap-1">
+                <span>Product Name</span>
+                @if (sortBy() === 'name') {
+                  <tui-icon [icon]="sortDescending() ? '@tui.arrow-down' : '@tui.arrow-up'" class="text-xs"></tui-icon>
+                } @else {
+                  <tui-icon icon="@tui.chevrons-up-down" class="text-xs opacity-30"></tui-icon>
+                }
+              </div>
+            </th>
+            <th (click)="toggleSort('category')" class="sortable-col w-40">
+              <div class="flex items-center gap-1">
+                <span>Category</span>
+                @if (sortBy() === 'category') {
+                  <tui-icon [icon]="sortDescending() ? '@tui.arrow-down' : '@tui.arrow-up'" class="text-xs"></tui-icon>
+                } @else {
+                  <tui-icon icon="@tui.chevrons-up-down" class="text-xs opacity-30"></tui-icon>
+                }
+              </div>
+            </th>
+            <th (click)="toggleSort('quantityInStock')" class="sortable-col text-right w-40">
+              <div class="flex items-center justify-end gap-1">
+                <span>Stock</span>
+                @if (sortBy() === 'quantityInStock') {
+                  <tui-icon [icon]="sortDescending() ? '@tui.arrow-down' : '@tui.arrow-up'" class="text-xs"></tui-icon>
+                } @else {
+                  <tui-icon icon="@tui.chevrons-up-down" class="text-xs opacity-30"></tui-icon>
+                }
+              </div>
+            </th>
+            <th (click)="toggleSort('costPrice')" class="sortable-col text-right w-32">
+              <div class="flex items-center justify-end gap-1">
+                <span>Cost</span>
+                @if (sortBy() === 'costPrice') {
+                  <tui-icon [icon]="sortDescending() ? '@tui.arrow-down' : '@tui.arrow-up'" class="text-xs"></tui-icon>
+                } @else {
+                  <tui-icon icon="@tui.chevrons-up-down" class="text-xs opacity-30"></tui-icon>
+                }
+              </div>
+            </th>
+            <th (click)="toggleSort('sellingPrice')" class="sortable-col text-right w-32">
+              <div class="flex items-center justify-end gap-1">
+                <span>Price</span>
+                @if (sortBy() === 'sellingPrice') {
+                  <tui-icon [icon]="sortDescending() ? '@tui.arrow-down' : '@tui.arrow-up'" class="text-xs"></tui-icon>
+                } @else {
+                  <tui-icon icon="@tui.chevrons-up-down" class="text-xs opacity-30"></tui-icon>
+                }
+              </div>
+            </th>
+            <th class="w-48">Supplier</th>
+            <th class="text-center w-24">Sync</th>
+            <th class="actions-col w-32"></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (product of products(); track product.id) {
+            <tr [class.selected-row]="isProductSelected(product)">
+              <td>
+                <input
+                  type="checkbox"
+                  [checked]="isProductSelected(product)"
+                  (change)="toggleProduct(product, $any($event.target).checked)"
+                />
+              </td>
+
+              <!-- SKU -->
+              <td>
+                <span class="sku-cell font-mono font-semibold text-xs text-[var(--accent)]">
+                  {{ product.sku }}
+                </span>
+              </td>
+
+              <!-- Name -->
+              <td class="font-medium text-[var(--text-primary)]">
+                <div>
+                  {{ product.name }}
+                  @if (product.description) {
+                    <span
+                      class="block text-xs text-[var(--text-muted)] font-normal mt-0.5 truncate max-w-xs"
+                      [title]="product.description"
+                    >
+                      {{ product.description }}
+                    </span>
+                  }
+                </div>
+              </td>
+
+              <!-- Category -->
+              <td class="text-[var(--text-muted)]">
+                {{ product.category }}
+              </td>
+
+              <!-- Stock Level -->
+              <td class="text-right">
+                <span
+                  [class]="
+                    product.quantityInStock <= product.reorderLevel
+                      ? 'stock-badge badge-warning'
+                      : 'stock-badge badge-ok'
+                  "
+                >
+                  {{ product.quantityInStock }}
+                </span>
+              </td>
+
+              <!-- Cost -->
+              <td class="text-right font-mono text-xs text-[var(--text-muted)]">
+                ${{ product.costPrice | number: '1.2-2' }}
+              </td>
+
+              <!-- Price -->
+              <td class="text-right font-mono text-xs text-[var(--text-primary)] font-semibold">
+                ${{ product.sellingPrice | number: '1.2-2' }}
+              </td>
+
+              <!-- Supplier -->
+              <td class="text-[var(--text-muted)] text-sm">
+                {{ product.supplier || '—' }}
+              </td>
+
+              <!-- Sync Status -->
+              <td class="text-center">
+                @switch (product.syncStatus) {
+                  @case ('synced') {
+                    <tui-icon icon="@tui.check-circle" class="text-emerald-400" title="Synced to backend"></tui-icon>
+                  }
+                  @case ('pending') {
+                    <tui-icon icon="@tui.sync" class="text-amber-400 animate-spin" title="Sync pending"></tui-icon>
+                  }
+                  @case ('failed') {
+                    <tui-icon icon="@tui.triangle-alert" class="text-rose-400" title="Sync failed"></tui-icon>
+                  }
+                  @default {
+                    <tui-icon icon="@tui.check-circle" class="text-[var(--text-muted)]"></tui-icon>
+                  }
+                }
+              </td>
+
+              <!-- Row Actions -->
+              <td>
+                <div class="flex gap-1.5 justify-end">
+                  <button
+                    tuiButton
+                    appearance="flat"
+                    size="xs"
+                    class="glass-btn-flat"
+                    (click)="editProduct.emit(product)"
+                    title="Edit"
+                  >
+                    <tui-icon icon="@tui.pencil"></tui-icon>
+                  </button>
+                  <button
+                    tuiButton
+                    appearance="flat"
+                    size="xs"
+                    class="glass-btn-flat delete-btn"
+                    (click)="deleteProduct.emit(product)"
+                    title="Delete"
+                  >
+                    <tui-icon icon="@tui.trash-2"></tui-icon>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="10" class="text-center p-8 text-[var(--text-muted)]">
+                <div class="flex flex-col items-center gap-2">
+                  <tui-icon icon="@tui.info" class="text-3xl"></tui-icon>
+                  <p class="font-semibold text-sm">No inventory items found</p>
+                  <p class="text-xs text-[var(--text-dim)]">Try adjusting your filters or search terms.</p>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </tui-loader>
+  </div>
+
+  <!-- Numbered + Prev/Next Pagination Footer -->
+  @if (totalCount() > 0) {
+    <div class="pagination-wrapper">
+      <span class="pagination-info">
+        Showing {{ (page() - 1) * pageSize() + 1 }} to {{ Math.min(page() * pageSize(), totalCount()) }} of {{ totalCount() }} items
+      </span>
+      <div class="pagination-buttons">
+        <button
+          tuiButton
+          appearance="flat"
+          size="xs"
+          [disabled]="page() === 1"
+          (click)="setPage(page() - 1)"
+          class="glass-btn-flat"
+        >
+          <tui-icon icon="@tui.chevron-left"></tui-icon>
+        </button>
+
+        @for (p of pagesArray(); track p) {
+          <button
+            tuiButton
+            size="xs"
+            (click)="setPage(p)"
+            [class.glass-btn-primary]="page() === p"
+            [class.glass-btn-flat]="page() !== p"
+          >
+            {{ p }}
+          </button>
+        }
+
+        <button
+          tuiButton
+          appearance="flat"
+          size="xs"
+          [disabled]="page() === totalPages()"
+          (click)="setPage(page() + 1)"
+          class="glass-btn-flat"
+        >
+          <tui-icon icon="@tui.chevron-right"></tui-icon>
+        </button>
+      </div>
+    </div>
+  }
+</div>

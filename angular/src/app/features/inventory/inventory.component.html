@@ -1,0 +1,129 @@
+<div class="grid grid-cols-12 gap-8">
+  <!-- Breadcrumb -->
+  <div class="col-span-12 flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 -mb-4">
+    <a
+      routerLink="/"
+      class="flex items-center gap-1.5 hover:text-indigo-500 dark:hover:text-indigo-400 hover:underline transition-colors"
+    >
+      <tui-icon icon="@tui.home" class="text-sm"></tui-icon>
+      <span>Home</span>
+    </a>
+    <tui-icon icon="@tui.chevron-right" class="text-[10px] text-slate-300 dark:text-slate-750"></tui-icon>
+    <span class="font-medium text-slate-700 dark:text-slate-300">Inventory</span>
+  </div>
+
+  <!-- Page Header -->
+  <div
+    class="col-span-12 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 p-6 rounded-xl shadow border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 transition-colors duration-200"
+  >
+    <div>
+      <h1 class="text-2xl font-bold text-slate-900 dark:text-slate-100">Inventory Management</h1>
+      <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">
+        Monitor stock levels, add new inventory items, and manage offline data sync.
+      </p>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <!-- Connection Status Badge -->
+      <div
+        [title]="isOnline() ? 'App is online' : 'App is offline'"
+        class="flex items-center gap-2 px-3 py-1.5 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-mono"
+      >
+        <span class="relative flex h-2 w-2">
+          <span
+            class="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75"
+            [class.bg-emerald-400]="isOnline()"
+            [class.bg-rose-400]="!isOnline()"
+          ></span>
+          <span
+            class="relative inline-flex rounded-full h-2 w-2"
+            [class.bg-emerald-500]="isOnline()"
+            [class.bg-rose-500]="!isOnline()"
+          ></span>
+        </span>
+        <span class="text-slate-700 dark:text-slate-300 font-semibold">{{
+          isOnline() ? 'ONLINE' : 'OFFLINE'
+        }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Metric Statistics Cards styled exactly like Sakai-NG's app-stats-widget -->
+  <app-metric-card
+    class="col-span-12 lg:col-span-6 xl:col-span-3"
+    title="Total SKU Types"
+    [value]="stats().totalSKUs"
+    icon="@tui.barcode"
+    iconBgClass="bg-indigo-500/10"
+    iconColorClass="text-indigo-500 dark:text-indigo-400"
+    [footerValue]="stats().totalSKUs"
+    footerText="registered items"
+    footerColorClass="text-indigo-600 dark:text-indigo-400"
+  />
+
+  <app-metric-card
+    class="col-span-12 lg:col-span-6 xl:col-span-3"
+    title="Total Value (Cost)"
+    [value]="'$' + (stats().totalValue | number: '1.2-2')"
+    icon="@tui.dollar-sign"
+    iconBgClass="bg-emerald-500/10"
+    iconColorClass="text-emerald-500 dark:text-emerald-400"
+    [footerValue]="'$' + (stats().totalValue | number: '1.2-2')"
+    footerText="total inventory value"
+    footerColorClass="text-emerald-600 dark:text-emerald-400"
+  />
+
+  <app-metric-card
+    class="col-span-12 lg:col-span-6 xl:col-span-3"
+    title="Low Stock Alerts"
+    [value]="stats().lowStockCount"
+    icon="@tui.triangle-alert"
+    [iconBgClass]="stats().lowStockCount > 0 ? 'bg-rose-500/10' : 'bg-slate-100 dark:bg-slate-800'"
+    [iconColorClass]="
+      stats().lowStockCount > 0 ? 'text-rose-500' : 'text-slate-500 dark:text-slate-400'
+    "
+    [footerValue]="stats().lowStockCount > 0 ? stats().lowStockCount : 'All clear'"
+    [footerText]="stats().lowStockCount > 0 ? 'require attention' : 'no low stock'"
+    [footerColorClass]="
+      stats().lowStockCount > 0
+        ? 'text-rose-600 dark:text-rose-400'
+        : 'text-emerald-600 dark:text-emerald-400'
+    "
+  />
+
+  <app-metric-card
+    class="col-span-12 lg:col-span-6 xl:col-span-3"
+    title="IndexedDB Cache"
+    value="Enabled"
+    icon="@tui.database"
+    iconBgClass="bg-teal-500/10"
+    iconColorClass="text-teal-500 dark:text-teal-400"
+    footerValue="Offline-First"
+    footerText="storage active"
+    footerColorClass="text-teal-600 dark:text-teal-400"
+  />
+
+  <!-- Reusable Modular Table Component -->
+  <app-inventory-list
+    class="col-span-12"
+    [products]="products()"
+    [totalCount]="totalCount()"
+    [loading]="loading()"
+    [categories]="categories()"
+    [pendingSyncCount]="stats().pendingSyncCount"
+    [(selectedProducts)]="selectedProducts"
+    [(searchQuery)]="searchQuery"
+    [(selectedCategories)]="selectedCategories"
+    [(page)]="page"
+    [(pageSize)]="pageSize"
+    (lazyLoad)="onLazyLoad($event)"
+    (addProduct)="openAddDialog()"
+    (editProduct)="editProduct($event)"
+    (deleteProduct)="deleteProduct($event)"
+    (deleteSelectedProducts)="deleteSelectedProducts()"
+    (sync)="triggerSync()"
+    (filterChange)="loadProducts()"
+  />
+
+
+</div>
